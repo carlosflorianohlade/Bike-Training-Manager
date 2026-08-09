@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Allenamenti — Bike Training Manager</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <link rel="stylesheet" href="css/style.css">
+    <script defer src="js/auth.js"></script>
+    <script defer src="js/trainings.js"></script>
+</head>
+<body>
+    <header>
+        <div class="container">
+            <div class="logo"><i class="fa-solid fa-person-biking"></i> <a href="dashboard.html">Bike Training Manager</a></div>
+            <button class="menu-toggle" id="menuToggle" aria-label="Apri menu"><i class="fa-solid fa-bars"></i></button>
+            <nav>
+                <ul id="mainNav">
+                    <li><a href="dashboard.html"><i class="fa-solid fa-gauge-high"></i> Dashboard</a></li>
+                    <li><a href="trainings.html" class="active"><i class="fa-solid fa-person-biking"></i> Allenamenti</a></li>
+                    <li><a href="statistics.html"><i class="fa-solid fa-chart-line"></i> Statistiche</a></li>
+                    <li><a href="profile.html"><i class="fa-solid fa-user"></i> Profilo</a></li>
+                    <li><a href="#" id="logoutLink"><i class="fa-solid fa-right-from-bracket"></i> Esci</a></li>
+                </ul>
+            </nav>
+        </div>
+    </header>
+
+    <main>
+        <div class="container">
+            <h1 class="page-title"><i class="fa-solid fa-person-biking"></i> Allenamenti</h1>
+            <p class="page-subtitle">Registra e gestisci le tue attività ciclistiche</p>
+
+            <div class="card">
+                <div class="filters-bar">
+                    <div class="form-group">
+                        <label for="searchText">Cerca</label>
+                        <input type="text" id="searchText" class="form-control" placeholder="Titolo o note...">
+                    </div>
+                    <div class="form-group">
+                        <label for="filterType">Tipo</label>
+                        <select id="filterType" class="form-control">
+                            <option value="">Tutti</option>
+                            <option value="MTB">MTB</option>
+                            <option value="strada">Strada</option>
+                            <option value="gravel">Gravel</option>
+                            <option value="indoor">Indoor</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="filterDateFrom">Da</label>
+                        <input type="date" id="filterDateFrom" class="form-control">
+                    </div>
+                    <div class="form-group">
+                        <label for="filterDateTo">A</label>
+                        <input type="date" id="filterDateTo" class="form-control">
+                    </div>
+                    <button class="btn btn-primary" onclick="loadTrainings()"><i class="fa-solid fa-magnifying-glass"></i> Cerca</button>
+                    <button class="btn btn-accent" onclick="openAddModal()"><i class="fa-solid fa-plus"></i> Aggiungi</button>
+                </div>
+
+                <div id="trainingsContainer" class="table-responsive">
+                    <div class="empty-state">
+                            <p>Nessun allenamento trovato.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <footer>
+        <div class="container">
+            <p>&copy; 2026 Bike Training Manager &mdash; Progetto Programmazione Web</p>
+        </div>
+    </footer>
+
+    <div class="modal-overlay hidden" id="trainingModal">
+        <div class="modal">
+            <h2 id="modalTitle"><i class="fa-solid fa-person-biking"></i> Nuovo allenamento</h2>
+            <form id="trainingForm">
+                <input type="hidden" id="editId">
+                <div class="form-group">
+                    <label for="tTitle">Titolo</label>
+                    <input type="text" id="tTitle" class="form-control" required>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="tDate">Data</label>
+                        <input type="date" id="tDate" class="form-control" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="tType">Tipo</label>
+                        <select id="tType" class="form-control" required>
+                            <option value="MTB">MTB</option>
+                            <option value="strada">Strada</option>
+                            <option value="gravel">Gravel</option>
+                            <option value="indoor">Indoor</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="tDistance">Distanza (km)</label>
+                        <input type="number" id="tDistance" class="form-control" step="0.01" min="0">
+                    </div>
+                    <div class="form-group">
+                        <label for="tDuration">Durata (min)</label>
+                        <input type="number" id="tDuration" class="form-control" min="0">
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="tElevation">Dislivello (m)</label>
+                        <input type="number" id="tElevation" class="form-control" min="0">
+                    </div>
+                    <div class="form-group">
+                        <label for="tAvgSpeed">Velocità media (km/h)</label>
+                        <input type="number" id="tAvgSpeed" class="form-control" step="0.1" min="0" readonly>
+                        <small class="form-text">Calcolata automaticamente da distanza e durata</small>
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="tAvgHr">FC media (bpm)</label>
+                        <input type="number" id="tAvgHr" class="form-control" min="0" max="250">
+                    </div>
+                    <div class="form-group">
+                        <label for="tMaxHr">FC max (bpm)</label>
+                        <input type="number" id="tMaxHr" class="form-control" min="0" max="250">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="tCadence">Cadenza (rpm)</label>
+                    <input type="number" id="tCadence" class="form-control" min="0" max="200">
+                </div>
+                <div class="form-group">
+                    <label for="tNotes">Note</label>
+                    <textarea id="tNotes" class="form-control"></textarea>
+                </div>
+                <div class="modal-actions">
+                    <button type="button" class="btn btn-secondary" onclick="closeModal()">Annulla</button>
+                    <button type="submit" class="btn btn-primary">Salva</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</body>
+</html>

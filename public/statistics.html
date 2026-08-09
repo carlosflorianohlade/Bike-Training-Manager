@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Statistiche — Bike Training Manager</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <script src="https://www.gstatic.com/charts/loader.js"></script>
+    <link rel="stylesheet" href="css/style.css">
+    <script defer src="js/auth.js"></script>
+    <script defer src="js/statistics.js"></script>
+</head>
+<body>
+    <header>
+        <div class="container">
+            <div class="logo"><i class="fa-solid fa-person-biking"></i> <a href="dashboard.html">Bike Training Manager</a></div>
+            <button class="menu-toggle" id="menuToggle" aria-label="Apri menu"><i class="fa-solid fa-bars"></i></button>
+            <nav>
+                <ul id="mainNav">
+                    <li><a href="dashboard.html"><i class="fa-solid fa-gauge-high"></i> Dashboard</a></li>
+                    <li><a href="trainings.html"><i class="fa-solid fa-person-biking"></i> Allenamenti</a></li>
+                    <li><a href="statistics.html" class="active"><i class="fa-solid fa-chart-line"></i> Statistiche</a></li>
+                    <li><a href="profile.html"><i class="fa-solid fa-user"></i> Profilo</a></li>
+                    <li><a href="#" id="logoutLink"><i class="fa-solid fa-right-from-bracket"></i> Esci</a></li>
+                </ul>
+            </nav>
+        </div>
+    </header>
+
+    <main>
+        <div class="container">
+            <h1 class="page-title"><i class="fa-solid fa-chart-line"></i> Statistiche</h1>
+            <p class="page-subtitle">Analizza le tue prestazioni nel tempo</p>
+
+            <div class="stats-grid" id="summaryStats">
+                <div class="stat-card">
+                    <div class="stat-icon"><i class="fa-solid fa-road"></i></div>
+                    <div class="stat-value" id="statTotalDistance">0</div>
+                    <div class="stat-label">Km totali</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon"><i class="fa-solid fa-clock"></i></div>
+                    <div class="stat-value" id="statTotalDuration">0</div>
+                    <div class="stat-label">Ore totali</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon"><i class="fa-solid fa-mountain"></i></div>
+                    <div class="stat-value" id="statTotalElevation">0</div>
+                    <div class="stat-label">Dislivello totale (m)</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon"><i class="fa-solid fa-gauge"></i></div>
+                    <div class="stat-value" id="statAvgDistance">0</div>
+                    <div class="stat-label">Media km/uscita</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon"><i class="fa-solid fa-trophy"></i></div>
+                    <div class="stat-value" id="statMaxDistance">0</div>
+                    <div class="stat-label">Max km</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon"><i class="fa-solid fa-list-ol"></i></div>
+                    <div class="stat-value" id="statCount">0</div>
+                    <div class="stat-label">Totale allenamenti</div>
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="card-title"><i class="fa-solid fa-road"></i> Chilometri percorsi</div>
+                <div class="chart-container" id="distanceChart"></div>
+            </div>
+
+            <div class="card">
+                <div class="card-title"><i class="fa-solid fa-clock"></i> Ore di allenamento</div>
+                <div class="chart-container" id="durationChart"></div>
+            </div>
+
+            <div class="card">
+                <div class="card-title"><i class="fa-solid fa-mountain"></i> Dislivello</div>
+                <div class="chart-container" id="elevationChart"></div>
+            </div>
+
+            <div class="card">
+                <div class="card-title"><i class="fa-solid fa-chart-pie"></i> Distribuzione per tipologia</div>
+                <div class="chart-container" id="typeChart" style="height:300px;"></div>
+            </div>
+        </div>
+    </main>
+
+    <footer>
+        <div class="container">
+            <p>&copy; 2026 Bike Training Manager &mdash; Progetto Programmazione Web</p>
+        </div>
+    </footer>
+</body>
+</html>

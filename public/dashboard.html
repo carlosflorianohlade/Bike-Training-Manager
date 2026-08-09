@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard — Bike Training Manager</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <link rel="stylesheet" href="css/style.css">
+    <script defer src="js/auth.js"></script>
+    <script defer src="js/dashboard.js"></script>
+</head>
+<body>
+    <header>
+        <div class="container">
+            <div class="logo"><i class="fa-solid fa-person-biking"></i> <a href="dashboard.html">Bike Training Manager</a></div>
+            <button class="menu-toggle" id="menuToggle" aria-label="Apri menu"><i class="fa-solid fa-bars"></i></button>
+            <nav>
+                <ul id="mainNav">
+                    <li><a href="dashboard.html" class="active"><i class="fa-solid fa-gauge-high"></i> Dashboard</a></li>
+                    <li><a href="trainings.html"><i class="fa-solid fa-person-biking"></i> Allenamenti</a></li>
+                    <li><a href="statistics.html"><i class="fa-solid fa-chart-line"></i> Statistiche</a></li>
+                    <li><a href="profile.html"><i class="fa-solid fa-user"></i> Profilo</a></li>
+                    <li><a href="#" id="logoutLink"><i class="fa-solid fa-right-from-bracket"></i> Esci</a></li>
+                </ul>
+            </nav>
+        </div>
+    </header>
+
+    <main>
+        <div class="container">
+            <h1 class="page-title"><i class="fa-solid fa-gauge-high"></i> Dashboard</h1>
+            <p class="page-subtitle" id="welcomeMsg">Caricamento...</p>
+
+            <div class="stats-grid" id="statsGrid">
+                <div class="stat-card">
+                    <div class="stat-icon"><i class="fa-solid fa-road"></i></div>
+                    <div class="stat-value" id="totalDistance">0</div>
+                    <div class="stat-label">Km totali</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon"><i class="fa-solid fa-clock"></i></div>
+                    <div class="stat-value" id="totalDuration">0</div>
+                    <div class="stat-label">Ore totali</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon"><i class="fa-solid fa-mountain"></i></div>
+                    <div class="stat-value" id="totalElevation">0</div>
+                    <div class="stat-label">Dislivello totale (m)</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon"><i class="fa-solid fa-list-ol"></i></div>
+                    <div class="stat-value" id="totalTrainings">0</div>
+                    <div class="stat-label">Allenamenti</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon"><i class="fa-solid fa-gauge"></i></div>
+                    <div class="stat-value" id="avgDistance">0</div>
+                    <div class="stat-label">Media km/uscita</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon"><i class="fa-solid fa-calendar-day"></i></div>
+                    <div class="stat-value" id="lastDate">---</div>
+                    <div class="stat-label">Ultimo allenamento</div>
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="card-title">
+                    <span><i class="fa-solid fa-bullseye"></i> Obiettivi</span>
+                    <button class="btn btn-primary btn-sm" onclick="openGoalModal()"><i class="fa-solid fa-plus"></i> Nuovo</button>
+                </div>
+                <div id="goalsContainer">
+                    <div class="empty-state">
+                            <p>Nessun obiettivo impostato. Crea il tuo primo obiettivo!</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="card-title"><i class="fa-solid fa-clock-rotate-left"></i> Ultimi allenamenti</div>
+                <div id="recentTrainings" class="table-responsive">
+                    <div class="empty-state">
+                            <p>Nessun allenamento registrato.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <footer>
+        <div class="container">
+            <p>&copy; 2026 Bike Training Manager &mdash; Progetto Programmazione Web</p>
+        </div>
+    </footer>
+
+    <div class="modal-overlay hidden" id="goalModal">
+        <div class="modal">
+            <h2 id="goalModalTitle"><i class="fa-solid fa-bullseye"></i> Nuovo obiettivo</h2>
+            <form id="goalForm">
+                <input type="hidden" id="goalEditId">
+                <div class="form-group">
+                    <label for="goalType">Tipo</label>
+                    <select id="goalType" class="form-control" required>
+                        <option value="distance">Distanza (km)</option>
+                        <option value="duration">Durata (minuti)</option>
+                        <option value="elevation">Dislivello (metri)</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="goalTarget">Valore target</label>
+                    <input type="number" id="goalTarget" class="form-control" step="0.01" min="1" required>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="goalYear">Anno scadenza</label>
+                        <input type="number" id="goalYear" class="form-control" min="2020" max="2030" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="goalMonth">Mese scadenza (opzionale)</label>
+                        <select id="goalMonth" class="form-control">
+                            <option value="">Annuale</option>
+                            <option value="1">Gennaio</option>
+                            <option value="2">Febbraio</option>
+                            <option value="3">Marzo</option>
+                            <option value="4">Aprile</option>
+                            <option value="5">Maggio</option>
+                            <option value="6">Giugno</option>
+                            <option value="7">Luglio</option>
+                            <option value="8">Agosto</option>
+                            <option value="9">Settembre</option>
+                            <option value="10">Ottobre</option>
+                            <option value="11">Novembre</option>
+                            <option value="12">Dicembre</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="modal-actions">
+                    <button type="button" class="btn btn-secondary" onclick="closeGoalModal()">Annulla</button>
+                    <button type="submit" class="btn btn-primary">Salva</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</body>
+</html>
