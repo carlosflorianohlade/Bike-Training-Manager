@@ -461,7 +461,7 @@ table tr:hover {
 }
 
 .hero {
-    background: linear-gradient(to right, rgba(20,50,35,0), rgba(45,106,79,0.8) 40% 60%, rgba(64,145,108,0)), url('../images/intro.avif') center/cover no-repeat;
+    background: linear-gradient(to right, rgba(20,50,35,0), rgba(45,106,79,0.8) 40% 60%, rgba(64,145,108,0)), url('../images/intro.avif') center 35%/cover no-repeat;
     color: #fff;
     height: 600px;
     padding: 180px 0;
