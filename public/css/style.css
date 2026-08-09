@@ -318,6 +318,8 @@ textarea.form-control {
 
 .btn-primary:hover {
     background-color: #40916C;
+    color: inherit;
+    text-decoration: inherit;
 }
 
 .btn-secondary {
@@ -344,7 +346,9 @@ textarea.form-control {
 }
 
 .btn-accent:hover {
-    background-color: #D45A3C;
+    background-color: #cc4f30;
+    color: inherit;
+    text-decoration: inherit;
 }
 
 .btn-sm {
