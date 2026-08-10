@@ -49,4 +49,27 @@ router.get('/stats/daily', authenticateToken, async (req, res) => {
     }
 });
 
+router.get('/stats/zones', authenticateToken, async (req, res) => {
+    try {
+        const year = parseInt(req.query.year) || new Date().getFullYear();
+        const month = parseInt(req.query.month) || (new Date().getMonth() + 1);
+        const [rows] = await db.execute(
+            `SELECT
+                FLOOR((DAY(t.training_date) - 1) / 7) + 1 AS week_num,
+                tz.zone_code,
+                SUM(tz.seconds) AS total_seconds
+             FROM training_zone_times tz
+             JOIN trainings t ON tz.training_id = t.id
+             WHERE t.user_id = ? AND YEAR(t.training_date) = ? AND MONTH(t.training_date) = ?
+             GROUP BY week_num, tz.zone_code
+             ORDER BY week_num, FIELD(tz.zone_code, 'z1','z2','z3','z4','z5a','z5b','z5c')`,
+            [req.user.userId, year, month]
+        );
+        res.json({ success: true, weeks: rows });
+    } catch (err) {
+        console.error('GET /api/stats/zones -', err.message);
+        res.status(500).json({ success: false, message: 'Errore del server' });
+    }
+});
+
 module.exports = router;

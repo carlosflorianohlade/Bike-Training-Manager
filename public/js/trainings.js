@@ -14,9 +14,18 @@ function formatDate(dateStr) {
     return d.getDate() + '/' + (d.getMonth() + 1) + '/' + d.getFullYear();
 }
 
+function toInputDateValue(value) {
+    const d = new Date(value);
+    if (isNaN(d.getTime())) return '';
+    const y = d.getUTCFullYear();
+    const m = String(d.getUTCMonth() + 1).padStart(2, '0');
+    const day = String(d.getUTCDate()).padStart(2, '0');
+    return y + '-' + m + '-' + day;
+}
+
 function calculateAvgSpeed() {
     const distance = parseFloat(document.getElementById('tDistance').value);
-    const duration = parseInt(document.getElementById('tDuration').value);
+    const duration = getDurationMinutes();
     const avgSpeedField = document.getElementById('tAvgSpeed');
 
     if (distance && duration && duration > 0) {
@@ -25,6 +34,128 @@ function calculateAvgSpeed() {
     } else {
         avgSpeedField.value = '';
     }
+}
+
+function getDurationMinutes() {
+    const h = parseInt(document.getElementById('tDurationHours').value) || 0;
+    const m = parseInt(document.getElementById('tDurationMinutes').value) || 0;
+    return h * 60 + m;
+}
+
+function setDurationFields(minutes) {
+    const total = minutes || 0;
+    document.getElementById('tDurationHours').value = Math.floor(total / 60);
+    document.getElementById('tDurationMinutes').value = total % 60;
+}
+
+const ZONE_DEFS = [
+    { code: 'z1', name: 'Recupero', lo: 0, hi: 0.82 },
+    { code: 'z2', name: 'Aerobico', lo: 0.82, hi: 0.89 },
+    { code: 'z3', name: 'Tempo', lo: 0.89, hi: 0.94 },
+    { code: 'z4', name: 'Sotto-soglia', lo: 0.94, hi: 1.0 },
+    { code: 'z5a', name: 'Sopra-soglia', lo: 1.0, hi: 1.03 },
+    { code: 'z5b', name: 'Capacità aerobica', lo: 1.03, hi: 1.06 },
+    { code: 'z5c', name: 'Capacità anaerobica', lo: 1.06, hi: 999 }
+];
+
+function computeZoneBounds(lthr) {
+    if (!lthr) return null;
+    return [
+        0,
+        Math.floor(lthr * 0.82),
+        Math.floor(lthr * 0.89),
+        Math.floor(lthr * 0.94),
+        lthr,
+        Math.floor(lthr * 1.03),
+        Math.floor(lthr * 1.06),
+        Infinity
+    ];
+}
+
+function formatZoneRange(bounds, idx) {
+    if (!bounds) return '';
+    const lo = bounds[idx];
+    const hi = bounds[idx + 1];
+    if (idx === 0) return '0-' + hi + ' bpm';
+    if (hi === Infinity) return '> ' + lo + ' bpm';
+    return (lo + 1) + '-' + hi + ' bpm';
+}
+
+function buildZoneSection(lthr) {
+    const container = document.getElementById('zoneSection');
+    if (!lthr) {
+        container.innerHTML = '<div class="zone-section"><div class="zone-header" style="cursor:default;color:#6C757D;"><i class="fa-solid fa-heart-pulse"></i> Zone cardiache <small style="font-weight:400;">— imposta LTHR nel profilo</small></div></div>';
+        return;
+    }
+    const bounds = computeZoneBounds(lthr);
+    let html = '<div class="zone-section"><div class="zone-header" onclick="toggleZoneSection()"><i class="fa-solid fa-heart-pulse"></i> Zone cardiache <span class="zone-toggle">&#9660;</span></div><div class="zone-body hidden">';
+    ZONE_DEFS.forEach((def, idx) => {
+        html += '<div class="zone-row" data-zone="' + def.code + '">' +
+            '<span class="zone-badge">' + def.code + '</span>' +
+            '<span class="zone-name">' + def.name + '</span>' +
+            '<span class="zone-range">' + formatZoneRange(bounds, idx) + '</span>' +
+            '<input type="number" class="zone-h" min="0" step="1" placeholder="h">' +
+            '<span class="zone-unit">h</span>' +
+            '<input type="number" class="zone-m" min="0" max="59" step="1" placeholder="m">' +
+            '<span class="zone-unit">m</span>' +
+            '<input type="number" class="zone-s" min="0" max="59" step="1" placeholder="s">' +
+            '<span class="zone-unit">s</span>' +
+            '</div>';
+    });
+    html += '</div></div>';
+    container.innerHTML = html;
+}
+
+function toggleZoneSection() {
+    const body = document.querySelector('.zone-body');
+    const toggle = document.querySelector('.zone-toggle');
+    if (!body) return;
+    body.classList.toggle('hidden');
+    toggle.textContent = body.classList.contains('hidden') ? '\u25B6' : '\u25BC';
+}
+
+function getZoneTimes() {
+    const rows = document.querySelectorAll('.zone-row');
+    if (!rows.length) return [];
+    return Array.from(rows).map(row => {
+        const h = parseInt(row.querySelector('.zone-h').value) || 0;
+        const m = parseInt(row.querySelector('.zone-m').value) || 0;
+        const s = parseInt(row.querySelector('.zone-s').value) || 0;
+        return { zone_code: row.dataset.zone, seconds: h * 3600 + m * 60 + s };
+    }).filter(z => z.seconds > 0);
+}
+
+function setZoneTimes(zoneTimes) {
+    const rows = document.querySelectorAll('.zone-row');
+    if (!rows.length) return;
+    const map = {};
+    (zoneTimes || []).forEach(z => { map[z.zone_code] = z.seconds; });
+    rows.forEach(row => {
+        const secs = map[row.dataset.zone] || 0;
+        row.querySelector('.zone-h').value = Math.floor(secs / 3600) || '';
+        row.querySelector('.zone-m').value = Math.floor((secs % 3600) / 60) || '';
+        row.querySelector('.zone-s').value = secs % 60 || '';
+    });
+}
+
+function resetZoneFields() {
+    const rows = document.querySelectorAll('.zone-row');
+    rows.forEach(row => {
+        row.querySelector('.zone-h').value = '';
+        row.querySelector('.zone-m').value = '';
+        row.querySelector('.zone-s').value = '';
+    });
+}
+
+function setFormDisabled(disabled) {
+    const controls = document.getElementById('trainingForm').querySelectorAll('input, select, textarea');
+    controls.forEach(el => { el.disabled = disabled; });
+}
+
+function setFormMode(editMode) {
+    setFormDisabled(!editMode);
+    document.getElementById('saveBtn').style.display = editMode ? '' : 'none';
+    document.getElementById('cancelBtn').textContent = editMode ? 'Annulla' : 'Chiudi';
 }
 
 function typeBadge(type) {
@@ -73,7 +204,7 @@ async function loadTrainings() {
             '</tr></thead><tbody>';
 
         html += data.trainings.map(t => {
-            return '<tr>' +
+            return '<tr onclick="visualizeModal(' + t.id + ')">' +
                 '<td>' + formatDate(t.training_date) + '</td>' +
                 '<td>' + escapeHtml(t.title) + '</td>' +
                 '<td>' + typeBadge(t.type) + '</td>' +
@@ -81,7 +212,7 @@ async function loadTrainings() {
                 '<td>' + formatDuration(t.duration) + '</td>' +
                 '<td>' + (t.elevation_gain || '-') + '</td>' +
                 '<td>' + (t.avg_speed ? Number(t.avg_speed).toFixed(1) : '-') + '</td>' +
-                '<td class="table-actions">' +
+                '<td class="table-actions" onclick="event.stopPropagation()">' +
                 '<button class="btn btn-primary btn-sm" onclick="openEditModal(' + t.id + ')"><i class="fa-solid fa-pen"></i></button>' +
                 '<button class="btn btn-danger btn-sm" onclick="deleteTraining(' + t.id + ')"><i class="fa-solid fa-trash"></i></button>' +
                 '</td></tr>';
@@ -111,9 +242,39 @@ function sortBy(field) {
 function openAddModal() {
     document.getElementById('modalTitle').textContent = 'Nuovo allenamento';
     document.getElementById('editId').value = '';
+    setFormMode(true);
     document.getElementById('trainingForm').reset();
     document.getElementById('tDate').value = new Date().toISOString().split('T')[0];
+    resetZoneFields();
     document.getElementById('trainingModal').classList.remove('hidden');
+}
+
+async function visualizeModal(id) {
+    try {
+        const res = await fetch('/api/trainings/' + id);
+        const data = await res.json();
+        if (!data.success) return;
+
+        const t = data.training;
+        document.getElementById('modalTitle').textContent = 'Visualizza allenamento';
+        document.getElementById('tTitle').value = t.title;
+        document.getElementById('tDate').value = toInputDateValue(t.training_date);
+        document.getElementById('tType').value = t.type;
+        document.getElementById('tDistance').value = t.distance;
+        setDurationFields(t.duration);
+        document.getElementById('tElevation').value = t.elevation_gain;
+        document.getElementById('tAvgSpeed').value = t.avg_speed;
+        document.getElementById('tAvgHr').value = t.avg_hr;
+        document.getElementById('tMaxHr').value = t.max_hr;
+        document.getElementById('tCadence').value = t.cadence;
+        document.getElementById('tNotes').value = t.notes;
+        setZoneTimes(t.zone_times);
+
+        setFormMode(false);
+        document.getElementById('trainingModal').classList.remove('hidden');
+    } catch (err) {
+        console.error('Error loading training:', err);
+    }
 }
 
 async function openEditModal(id) {
@@ -124,18 +285,20 @@ async function openEditModal(id) {
 
         const t = data.training;
         document.getElementById('modalTitle').textContent = 'Modifica allenamento';
+        setFormMode(true);
+        document.getElementById('tDate').value = toInputDateValue(t.training_date);
         document.getElementById('editId').value = t.id;
         document.getElementById('tTitle').value = t.title;
-        document.getElementById('tDate').value = t.training_date;
         document.getElementById('tType').value = t.type;
         document.getElementById('tDistance').value = t.distance;
-        document.getElementById('tDuration').value = t.duration;
+        setDurationFields(t.duration);
         document.getElementById('tElevation').value = t.elevation_gain;
         calculateAvgSpeed();
         document.getElementById('tAvgHr').value = t.avg_hr;
         document.getElementById('tMaxHr').value = t.max_hr;
         document.getElementById('tCadence').value = t.cadence;
         document.getElementById('tNotes').value = t.notes;
+        setZoneTimes(t.zone_times);
 
         document.getElementById('trainingModal').classList.remove('hidden');
     } catch (err) {
@@ -167,8 +330,15 @@ document.addEventListener('DOMContentLoaded', async function() {
     document.getElementById('tDate').value = new Date().toISOString().split('T')[0];
     await loadTrainings();
 
+    const profileRes = await fetch('/api/profile');
+    const profileData = await profileRes.json();
+    if (profileData.success) {
+        buildZoneSection(profileData.user.lthr);
+    }
+
     document.getElementById('tDistance').addEventListener('input', calculateAvgSpeed);
-    document.getElementById('tDuration').addEventListener('input', calculateAvgSpeed);
+    document.getElementById('tDurationHours').addEventListener('input', calculateAvgSpeed);
+    document.getElementById('tDurationMinutes').addEventListener('input', calculateAvgSpeed);
 
     document.getElementById('trainingForm').addEventListener('submit', async function(e) {
         e.preventDefault();
@@ -177,13 +347,14 @@ document.addEventListener('DOMContentLoaded', async function() {
             training_date: document.getElementById('tDate').value,
             type: document.getElementById('tType').value,
             distance: parseFloat(document.getElementById('tDistance').value) || null,
-            duration: parseInt(document.getElementById('tDuration').value) || null,
+            duration: getDurationMinutes() || null,
             elevation_gain: parseInt(document.getElementById('tElevation').value) || null,
             avg_speed: parseFloat(document.getElementById('tAvgSpeed').value) || null,
             avg_hr: parseInt(document.getElementById('tAvgHr').value) || null,
             max_hr: parseInt(document.getElementById('tMaxHr').value) || null,
             cadence: parseInt(document.getElementById('tCadence').value) || null,
-            notes: document.getElementById('tNotes').value || null
+            notes: document.getElementById('tNotes').value || null,
+            zone_times: getZoneTimes()
         };
 
         const editId = document.getElementById('editId').value;

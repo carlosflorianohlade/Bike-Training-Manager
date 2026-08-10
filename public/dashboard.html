@@ -102,13 +102,20 @@
                     <label for="goalType">Tipo</label>
                     <select id="goalType" class="form-control" required>
                         <option value="distance">Distanza (km)</option>
-                        <option value="duration">Durata (minuti)</option>
+                        <option value="duration">Durata</option>
                         <option value="elevation">Dislivello (metri)</option>
                     </select>
                 </div>
-                <div class="form-group">
+                <div class="form-group" id="goalNumericFields">
                     <label for="goalTarget">Valore target</label>
                     <input type="number" id="goalTarget" class="form-control" step="0.01" min="1" required>
+                </div>
+                <div class="form-group hidden" id="goalDurationFields">
+                    <label>Durata</label>
+                    <div class="duration-inputs">
+                        <input type="number" id="goalDurationHours" class="form-control" min="0" step="1" placeholder="ore">
+                        <input type="number" id="goalDurationMinutes" class="form-control" min="0" max="59" step="1" placeholder="min">
+                    </div>
                 </div>
                 <div class="form-row">
                     <div class="form-group">

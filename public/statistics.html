@@ -27,65 +27,60 @@
         </div>
     </header>
 
-    <main>
-        <div class="container">
-            <h1 class="page-title"><i class="fa-solid fa-chart-line"></i> Statistiche</h1>
-            <p class="page-subtitle">Analizza le tue prestazioni nel tempo</p>
+<main>
+    <div class="container">
+        <h1 class="page-title"><i class="fa-solid fa-chart-line"></i> Statistiche</h1>
+        <p class="page-subtitle">Analizza le tue prestazioni nel tempo</p>
 
-            <div class="stats-grid" id="summaryStats">
-                <div class="stat-card">
-                    <div class="stat-icon"><i class="fa-solid fa-road"></i></div>
-                    <div class="stat-value" id="statTotalDistance">0</div>
-                    <div class="stat-label">Km totali</div>
-                </div>
-                <div class="stat-card">
-                    <div class="stat-icon"><i class="fa-solid fa-clock"></i></div>
-                    <div class="stat-value" id="statTotalDuration">0</div>
-                    <div class="stat-label">Ore totali</div>
-                </div>
-                <div class="stat-card">
-                    <div class="stat-icon"><i class="fa-solid fa-mountain"></i></div>
-                    <div class="stat-value" id="statTotalElevation">0</div>
-                    <div class="stat-label">Dislivello totale (m)</div>
-                </div>
-                <div class="stat-card">
-                    <div class="stat-icon"><i class="fa-solid fa-gauge"></i></div>
-                    <div class="stat-value" id="statAvgDistance">0</div>
-                    <div class="stat-label">Media km/uscita</div>
-                </div>
-                <div class="stat-card">
-                    <div class="stat-icon"><i class="fa-solid fa-trophy"></i></div>
-                    <div class="stat-value" id="statMaxDistance">0</div>
-                    <div class="stat-label">Max km</div>
-                </div>
-                <div class="stat-card">
-                    <div class="stat-icon"><i class="fa-solid fa-list-ol"></i></div>
-                    <div class="stat-value" id="statCount">0</div>
-                    <div class="stat-label">Totale allenamenti</div>
-                </div>
+        <div class="stats-grid" id="summaryStats">
+            <div class="stat-card">
+                <div class="stat-icon"><i class="fa-solid fa-road"></i></div>
+                <div class="stat-value" id="statTotalDistance">0</div>
+                <div class="stat-label">Km totali</div>
             </div>
-
-            <div class="card">
-                <div class="card-title"><i class="fa-solid fa-road"></i> Chilometri percorsi</div>
-                <div class="chart-container" id="distanceChart"></div>
+            <div class="stat-card">
+                <div class="stat-icon"><i class="fa-solid fa-clock"></i></div>
+                <div class="stat-value" id="statTotalDuration">0</div>
+                <div class="stat-label">Ore totali</div>
             </div>
-
-            <div class="card">
-                <div class="card-title"><i class="fa-solid fa-clock"></i> Ore di allenamento</div>
-                <div class="chart-container" id="durationChart"></div>
+            <div class="stat-card">
+                <div class="stat-icon"><i class="fa-solid fa-mountain"></i></div>
+                <div class="stat-value" id="statTotalElevation">0</div>
+                <div class="stat-label">Dislivello totale (m)</div>
             </div>
-
-            <div class="card">
-                <div class="card-title"><i class="fa-solid fa-mountain"></i> Dislivello</div>
-                <div class="chart-container" id="elevationChart"></div>
+            <div class="stat-card">
+                <div class="stat-icon"><i class="fa-solid fa-gauge"></i></div>
+                <div class="stat-value" id="statAvgDistance">0</div>
+                <div class="stat-label">Media km/uscita</div>
             </div>
-
-            <div class="card">
-                <div class="card-title"><i class="fa-solid fa-chart-pie"></i> Distribuzione per tipologia</div>
-                <div class="chart-container" id="typeChart" style="height:300px;"></div>
+            <div class="stat-card">
+                <div class="stat-icon"><i class="fa-solid fa-trophy"></i></div>
+                <div class="stat-value" id="statMaxDistance">0</div>
+                <div class="stat-label">Max km</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon"><i class="fa-solid fa-list-ol"></i></div>
+                <div class="stat-value" id="statCount">0</div>
+                <div class="stat-label">Totale allenamenti</div>
             </div>
         </div>
-    </main>
+
+        <div class="card">
+            <div class="card-title"><i class="fa-solid fa-calendar-days"></i> Calendario allenamenti</div>
+            <div class="calendar-container" id="trainingCalendar"></div>
+        </div>
+
+        <div class="card">
+            <div class="card-title"><i class="fa-solid fa-heart-pulse"></i> Tempo per zona cardiaca</div>
+            <div id="zoneChart" class="table-responsive"></div>
+        </div>
+
+        <div class="card">
+            <div class="card-title"><i class="fa-solid fa-chart-pie"></i> Distribuzione per tipologia</div>
+            <div class="chart-container" id="typeChart" style="height:300px;"></div>
+        </div>
+    </div>
+</main>
 
     <footer>
         <div class="container">

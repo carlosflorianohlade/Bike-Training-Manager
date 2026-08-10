@@ -8,7 +8,7 @@ const router = express.Router();
 router.get('/profile', authenticateToken, async (req, res) => {
     try {
         const [rows] = await db.execute(
-            'SELECT id, first_name, last_name, email, weight, height, preferred_discipline, created_at FROM users WHERE id = ?',
+            'SELECT id, first_name, last_name, email, weight, height, lthr, preferred_discipline, created_at FROM users WHERE id = ?',
             [req.user.userId]
         );
         if (rows.length === 0) return res.status(404).json({ success: false, message: 'Utente non trovato' });
@@ -21,10 +21,10 @@ router.get('/profile', authenticateToken, async (req, res) => {
 
 router.put('/profile', authenticateToken, async (req, res) => {
     try {
-        const { first_name, last_name, weight, height, preferred_discipline } = req.body;
+        const { first_name, last_name, weight, height, lthr, preferred_discipline } = req.body;
         await db.execute(
-            'UPDATE users SET first_name = ?, last_name = ?, weight = ?, height = ?, preferred_discipline = ? WHERE id = ?',
-            [first_name, last_name, weight || null, height || null, preferred_discipline || 'MTB', req.user.userId]
+            'UPDATE users SET first_name = ?, last_name = ?, weight = ?, height = ?, lthr = ?, preferred_discipline = ? WHERE id = ?',
+            [first_name, last_name, weight || null, height || null, lthr || null, preferred_discipline || 'MTB', req.user.userId]
         );
         res.json({ success: true, message: 'Profilo aggiornato' });
     } catch (err) {

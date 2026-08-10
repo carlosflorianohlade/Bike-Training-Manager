@@ -1,6 +1,7 @@
 let currentUser = null;
 
 function formatDuration(minutes) {
+    if (!minutes && minutes !== 0) return '-';
     const h = Math.floor(minutes / 60);
     const m = minutes % 60;
     return h + 'h ' + m + 'm';
@@ -28,20 +29,22 @@ async function loadCharts() {
         const now = new Date();
         const year = now.getFullYear();
         const month = now.getMonth() + 1;
-        const daysInMonth = new Date(year, month, 0).getDate();
 
-        const res = await fetch('/api/stats/daily?year=' + year + '&month=' + month);
-        const data = await res.json();
-        if (!data.success) return;
+        const [dailyRes, zoneRes] = await Promise.all([
+            fetch('/api/stats/daily?year=' + year + '&month=' + month),
+            fetch('/api/stats/zones?year=' + year + '&month=' + month)
+        ]);
 
-        const dailyMap = {};
-        data.daily.forEach(d => { dailyMap[d.day] = d; });
+        const dailyData = await dailyRes.json();
+        const zoneData = await zoneRes.json();
+
+        if (!dailyData.success) return;
+
+        drawTrainingCalendar(dailyData.daily, year, month);
 
         google.charts.load('current', { packages: ['corechart'] });
         google.charts.setOnLoadCallback(function() {
-            drawDistanceChart(dailyMap, daysInMonth, month, year);
-            drawDurationChart(dailyMap, daysInMonth, month, year);
-            drawElevationChart(dailyMap, daysInMonth, month, year);
+            if (zoneData.success) drawZoneTable(zoneData.weeks, month, year);
             drawTypeChart();
         });
     } catch (err) {
@@ -49,79 +52,73 @@ async function loadCharts() {
     }
 }
 
-function drawDistanceChart(dailyMap, daysInMonth, month, year) {
-    const monthName = ['Gen','Feb','Mar','Apr','Mag','Giu','Lug','Ago','Set','Ott','Nov','Dic'][month - 1];
-    const chartData = [['Giorno', 'Km']];
+function drawTrainingCalendar(daily, year, month) {
+    const daysInMonth = new Date(year, month, 0).getDate();
+    const firstDay = new Date(year, month - 1, 1).getDay();
+    const trainingDays = {};
+    daily.forEach(d => { trainingDays[d.day] = true; });
 
-    for (let day = 1; day <= daysInMonth; day++) {
-        const d = dailyMap[day];
-        chartData.push(['' + day, d ? Number(d.total_distance) : 0]);
+    const dayNames = ['Dom', 'Lun', 'Mar', 'Mer', 'Gio', 'Ven', 'Sab'];
+    const monthName = ['Gennaio', 'Febbraio', 'Marzo', 'Aprile', 'Maggio', 'Giugno', 'Luglio', 'Agosto', 'Settembre', 'Ottobre', 'Novembre', 'Dicembre'][month - 1];
+
+    let html = '<div class="calendar-header">' + monthName + ' ' + year + '</div>';
+    html += '<div class="calendar-grid">';
+    dayNames.forEach(d => { html += '<div class="cal-day-header">' + d + '</div>'; });
+
+    for (let i = 0; i < firstDay; i++) {
+        html += '<div class="cal-day cal-empty"></div>';
     }
 
-    const dataTable = google.visualization.arrayToDataTable(chartData);
-    const options = {
-        title: monthName + ' ' + year,
-        titleTextStyle: { fontSize: 14, bold: true, color: '#2D6A4F' },
-        chartArea: { width: '85%', height: '70%' },
-        colors: ['#40916C'],
-        legend: { position: 'none' },
-        vAxis: { title: 'Km', minValue: 0, titleTextStyle: { fontSize: 11, color: '#6C757D' } },
-        hAxis: { title: 'Giorno', textStyle: { fontSize: 9 } },
-        animation: { startup: true, duration: 500, easing: 'out' }
-    };
+    for (let day = 1; day <= daysInMonth; day++) {
+        const trained = trainingDays[day];
+        html += '<div class="cal-day' + (trained ? ' cal-trained' : '') + '">' + day + '</div>';
+    }
 
-    const chart = new google.visualization.ColumnChart(document.getElementById('distanceChart'));
-    chart.draw(dataTable, options);
+    html += '</div>';
+    document.getElementById('trainingCalendar').innerHTML = html;
 }
 
-function drawDurationChart(dailyMap, daysInMonth, month, year) {
-    const monthName = ['Gen','Feb','Mar','Apr','Mag','Giu','Lug','Ago','Set','Ott','Nov','Dic'][month - 1];
-    const chartData = [['Giorno', 'Ore']];
+function drawZoneTable(weeks, month, year) {
+    const weekMap = {};
+    const zoneCodes = ['z1', 'z2', 'z3', 'z4', 'z5a', 'z5b', 'z5c'];
+    const zoneLabels = { z1: 'Z1 Recupero', z2: 'Z2 Aerobico', z3: 'Z3 Tempo', z4: 'Z4 Sotto-soglia', z5a: 'Z5a Sopra-soglia', z5b: 'Z5b Cap. aerobica', z5c: 'Z5c Cap. anaerobica' };
+    const zoneColors = ['#95D5B2', '#52B788', '#2D6A4F', '#FFD166', '#F4A261', '#E76F51', '#D90429'];
 
-    for (let day = 1; day <= daysInMonth; day++) {
-        const d = dailyMap[day];
-        chartData.push(['' + day, d ? Number(d.total_duration) / 60 : 0]);
+    weeks.forEach(w => {
+        if (!weekMap[w.week_num]) weekMap[w.week_num] = {};
+        weekMap[w.week_num][w.zone_code] = Number(w.total_seconds);
+    });
+
+    const weekNums = Object.keys(weekMap).map(Number).sort((a, b) => a - b);
+    if (!weekNums.length) {
+        document.getElementById('zoneChart').innerHTML = '<div class="empty-state"><p>Nessun dato per le zone cardiache questo mese.</p></div>';
+        return;
     }
 
-    const dataTable = google.visualization.arrayToDataTable(chartData);
-    const options = {
-        title: monthName + ' ' + year,
-        titleTextStyle: { fontSize: 14, bold: true, color: '#2D6A4F' },
-        chartArea: { width: '85%', height: '70%' },
-        colors: ['#E76F51'],
-        legend: { position: 'none' },
-        vAxis: { title: 'Ore', minValue: 0, titleTextStyle: { fontSize: 11, color: '#6C757D' } },
-        hAxis: { title: 'Giorno', textStyle: { fontSize: 9 } },
-        animation: { startup: true, duration: 500, easing: 'out' }
-    };
-
-    const chart = new google.visualization.ColumnChart(document.getElementById('durationChart'));
-    chart.draw(dataTable, options);
-}
-
-function drawElevationChart(dailyMap, daysInMonth, month, year) {
-    const monthName = ['Gen','Feb','Mar','Apr','Mag','Giu','Lug','Ago','Set','Ott','Nov','Dic'][month - 1];
-    const chartData = [['Giorno', 'Dislivello']];
-
-    for (let day = 1; day <= daysInMonth; day++) {
-        const d = dailyMap[day];
-        chartData.push(['' + day, d ? Number(d.total_elevation) : 0]);
+    function fmt(secs) {
+        const h = Math.floor(secs / 3600);
+        const m = Math.floor((secs % 3600) / 60);
+        if (h === 0) return m + 'm';
+        return h + 'h ' + m + 'm';
     }
 
-    const dataTable = google.visualization.arrayToDataTable(chartData);
-    const options = {
-        title: monthName + ' ' + year,
-        titleTextStyle: { fontSize: 14, bold: true, color: '#2D6A4F' },
-        chartArea: { width: '85%', height: '70%' },
-        colors: ['#95D5B2'],
-        legend: { position: 'none' },
-        vAxis: { title: 'Metri', minValue: 0, titleTextStyle: { fontSize: 11, color: '#6C757D' } },
-        hAxis: { title: 'Giorno', textStyle: { fontSize: 9 } },
-        animation: { startup: true, duration: 500, easing: 'out' }
-    };
+    let html = '<table class="zone-table"><thead><tr><th>Zona</th>';
+    weekNums.forEach(w => { html += '<th>Sett. ' + w + '</th>'; });
+    html += '<th>Totale</th></tr></thead><tbody>';
 
-    const chart = new google.visualization.ColumnChart(document.getElementById('elevationChart'));
-    chart.draw(dataTable, options);
+    zoneCodes.forEach((code, idx) => {
+        let total = 0;
+        html += '<tr><td><span class="zone-dot" style="background:' + zoneColors[idx] + '"></span>' + zoneLabels[code] + '</td>';
+        weekNums.forEach(w => {
+            const secs = weekMap[w][code] || 0;
+            total += secs;
+            html += '<td>' + fmt(secs) + '</td>';
+        });
+        html += '<td><strong>' + fmt(total) + '</strong></td></tr>';
+    });
+
+    html += '</tbody></table>';
+    document.getElementById('zoneChart').innerHTML = html;
 }
 
 async function drawTypeChart() {

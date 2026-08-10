@@ -1,6 +1,7 @@
 let currentUser = null;
 
 function formatDuration(minutes) {
+    if (!minutes && minutes !== 0) return '-';
     const h = Math.floor(minutes / 60);
     const m = minutes % 60;
     return h + 'h ' + m + 'm';
@@ -58,11 +59,14 @@ async function loadGoals() {
         }
         container.innerHTML = data.goals.map(g => {
             const typeLabels = { distance: 'Distanza', duration: 'Durata', elevation: 'Dislivello' };
-            const unitLabels = { distance: 'km', duration: 'min', elevation: 'm' };
+            const unitLabels = { distance: 'km', duration: '', elevation: 'm' };
+            const formatVal = g.type === 'duration'
+                ? formatDuration(Number(g.current_progress)) + ' / ' + formatDuration(Number(g.target_value))
+                : Number(g.current_progress).toLocaleString() + ' / ' + Number(g.target_value).toLocaleString() + ' ' + unitLabels[g.type];
             return '<div class="goal-item fade-in">' +
                 '<div class="goal-header">' +
                 '<span class="goal-type">' + typeLabels[g.type] + ' (' + deadlineLabel(g) + ')</span>' +
-                '<span class="goal-value">' + Number(g.current_progress).toLocaleString() + '/' + Number(g.target_value).toLocaleString() + ' ' + unitLabels[g.type] + '</span>' +
+                '<span class="goal-value">' + formatVal + '</span>' +
                 '<span class="goal-actions">' +
                 '<button class="btn btn-sm btn-primary" onclick="openEditGoal(' + g.id + ')"><i class="fa-solid fa-pen"></i></button> ' +
                 '<button class="btn btn-sm btn-danger" onclick="deleteGoal(' + g.id + ')"><i class="fa-solid fa-trash"></i></button>' +
@@ -116,6 +120,8 @@ function openGoalModal() {
     document.getElementById('goalEditId').value = '';
     document.getElementById('goalForm').reset();
     document.getElementById('goalYear').value = new Date().getFullYear();
+    document.getElementById('goalType').value = 'distance';
+    toggleGoalDurationFields();
     document.getElementById('goalModal').classList.remove('hidden');
 }
 
@@ -130,8 +136,11 @@ async function openEditGoal(id) {
     document.getElementById('goalEditId').value = goal.id;
     document.getElementById('goalType').value = goal.type;
     document.getElementById('goalTarget').value = goal.target_value;
+    document.getElementById('goalDurationHours').value = Math.floor(goal.target_value / 60);
+    document.getElementById('goalDurationMinutes').value = goal.target_value % 60;
     document.getElementById('goalYear').value = goal.year;
     document.getElementById('goalMonth').value = goal.month || '';
+    toggleGoalDurationFields();
     document.getElementById('goalModal').classList.remove('hidden');
 }
 
@@ -155,6 +164,16 @@ function closeGoalModal() {
     document.getElementById('goalModal').classList.add('hidden');
 }
 
+function toggleGoalDurationFields() {
+    const isDuration = document.getElementById('goalType').value === 'duration';
+    document.getElementById('goalDurationFields').classList.toggle('hidden', !isDuration);
+    document.getElementById('goalNumericFields').classList.toggle('hidden', isDuration);
+
+    document.getElementById('goalTarget').required = !isDuration;
+    document.getElementById('goalDurationHours').required = isDuration;
+    document.getElementById('goalDurationMinutes').required = isDuration;
+}
+
 document.addEventListener('DOMContentLoaded', async function() {
     currentUser = await checkAuth();
     if (!currentUser) return;
@@ -167,10 +186,13 @@ document.addEventListener('DOMContentLoaded', async function() {
 
         const monthVal = document.getElementById('goalMonth').value;
         const editId = document.getElementById('goalEditId').value;
+        const goalType = document.getElementById('goalType').value;
 
         const goal = {
-            type: document.getElementById('goalType').value,
-            target_value: parseFloat(document.getElementById('goalTarget').value),
+            type: goalType,
+            target_value: goalType === 'duration'
+                ? (parseInt(document.getElementById('goalDurationHours').value) || 0) * 60 + (parseInt(document.getElementById('goalDurationMinutes').value) || 0)
+                : parseFloat(document.getElementById('goalTarget').value),
             year: parseInt(document.getElementById('goalYear').value),
             month: monthVal ? parseInt(monthVal) : null
         };
@@ -201,4 +223,6 @@ document.addEventListener('DOMContentLoaded', async function() {
             alert('Errore di connessione');
         }
     });
+
+    document.getElementById('goalType').addEventListener('change', toggleGoalDurationFields);
 });

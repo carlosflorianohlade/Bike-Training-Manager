@@ -42,13 +42,21 @@ router.get('/trainings', authenticateToken, async (req, res) => {
 
 router.post('/trainings', authenticateToken, async (req, res) => {
     try {
-        const { title, training_date, type, distance, duration, elevation_gain, avg_speed, avg_hr, max_hr, cadence, notes } = req.body;
+        const { title, training_date, type, distance, duration, elevation_gain, avg_speed, avg_hr, max_hr, cadence, notes, zone_times } = req.body;
         const [result] = await db.execute(
             `INSERT INTO trainings (user_id, title, training_date, type, distance, duration, elevation_gain, avg_speed, avg_hr, max_hr, cadence, notes)
              VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
             [req.user.userId, title, training_date, type, distance || null, duration || null, elevation_gain || null, avg_speed || null, avg_hr || null, max_hr || null, cadence || null, notes || null]
         );
-        res.json({ success: true, id: result.insertId, message: 'Allenamento aggiunto' });
+        const trainingId = result.insertId;
+        if (zone_times && zone_times.length > 0) {
+            const values = zone_times.map(z => [trainingId, z.zone_code, z.seconds || 0]);
+            await db.query(
+                'INSERT INTO training_zone_times (training_id, zone_code, seconds) VALUES ?',
+                [values]
+            );
+        }
+        res.json({ success: true, id: trainingId, message: 'Allenamento aggiunto' });
     } catch (err) {
         console.error(err);
         res.status(500).json({ success: false, message: 'Errore del server' });
@@ -62,7 +70,13 @@ router.get('/trainings/:id', authenticateToken, async (req, res) => {
             [req.params.id, req.user.userId]
         );
         if (rows.length === 0) return res.status(404).json({ success: false, message: 'Allenamento non trovato' });
-        res.json({ success: true, training: rows[0] });
+        const [zoneRows] = await db.execute(
+            'SELECT zone_code, seconds FROM training_zone_times WHERE training_id = ?',
+            [req.params.id]
+        );
+        const training = rows[0];
+        training.zone_times = zoneRows;
+        res.json({ success: true, training });
     } catch (err) {
         console.error(err);
         res.status(500).json({ success: false, message: 'Errore del server' });
@@ -71,13 +85,21 @@ router.get('/trainings/:id', authenticateToken, async (req, res) => {
 
 router.put('/trainings/:id', authenticateToken, async (req, res) => {
     try {
-        const { title, training_date, type, distance, duration, elevation_gain, avg_speed, avg_hr, max_hr, cadence, notes } = req.body;
+        const { title, training_date, type, distance, duration, elevation_gain, avg_speed, avg_hr, max_hr, cadence, notes, zone_times } = req.body;
         const [result] = await db.execute(
             `UPDATE trainings SET title = ?, training_date = ?, type = ?, distance = ?, duration = ?, elevation_gain = ?, avg_speed = ?, avg_hr = ?, max_hr = ?, cadence = ?, notes = ?
              WHERE id = ? AND user_id = ?`,
             [title, training_date, type, distance || null, duration || null, elevation_gain || null, avg_speed || null, avg_hr || null, max_hr || null, cadence || null, notes || null, req.params.id, req.user.userId]
         );
         if (result.affectedRows === 0) return res.status(404).json({ success: false, message: 'Allenamento non trovato' });
+        await db.execute('DELETE FROM training_zone_times WHERE training_id = ?', [req.params.id]);
+        if (zone_times && zone_times.length > 0) {
+            const values = zone_times.map(z => [req.params.id, z.zone_code, z.seconds || 0]);
+            await db.query(
+                'INSERT INTO training_zone_times (training_id, zone_code, seconds) VALUES ?',
+                [values]
+            );
+        }
         res.json({ success: true, message: 'Allenamento aggiornato' });
     } catch (err) {
         console.error(err);

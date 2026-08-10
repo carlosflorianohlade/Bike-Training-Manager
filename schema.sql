@@ -9,6 +9,7 @@ CREATE TABLE users (
     password_hash VARCHAR(255) NOT NULL,
     weight DECIMAL(4,1),
     height DECIMAL(4,1),
+    lthr INT DEFAULT NULL,
     preferred_discipline ENUM('MTB','strada','gravel','indoor') DEFAULT 'MTB',
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
@@ -30,6 +31,15 @@ CREATE TABLE trainings (
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
+);
+
+CREATE TABLE training_zone_times (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    training_id INT NOT NULL,
+    zone_code VARCHAR(5) NOT NULL,
+    seconds INT NOT NULL DEFAULT 0,
+    FOREIGN KEY (training_id) REFERENCES trainings(id) ON DELETE CASCADE,
+    UNIQUE KEY (training_id, zone_code)
 );
 
 CREATE TABLE goals (

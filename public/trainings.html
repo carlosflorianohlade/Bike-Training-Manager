@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="it">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -9,15 +10,18 @@
     <script defer src="js/auth.js"></script>
     <script defer src="js/trainings.js"></script>
 </head>
+
 <body>
     <header>
         <div class="container">
-            <div class="logo"><i class="fa-solid fa-person-biking"></i> <a href="dashboard.html">Bike Training Manager</a></div>
+            <div class="logo"><i class="fa-solid fa-person-biking"></i> <a href="dashboard.html">Bike Training
+                    Manager</a></div>
             <button class="menu-toggle" id="menuToggle" aria-label="Apri menu"><i class="fa-solid fa-bars"></i></button>
             <nav>
                 <ul id="mainNav">
                     <li><a href="dashboard.html"><i class="fa-solid fa-gauge-high"></i> Dashboard</a></li>
-                    <li><a href="trainings.html" class="active"><i class="fa-solid fa-person-biking"></i> Allenamenti</a></li>
+                    <li><a href="trainings.html" class="active"><i class="fa-solid fa-person-biking"></i>
+                            Allenamenti</a></li>
                     <li><a href="statistics.html"><i class="fa-solid fa-chart-line"></i> Statistiche</a></li>
                     <li><a href="profile.html"><i class="fa-solid fa-user"></i> Profilo</a></li>
                     <li><a href="#" id="logoutLink"><i class="fa-solid fa-right-from-bracket"></i> Esci</a></li>
@@ -55,13 +59,15 @@
                         <label for="filterDateTo">A</label>
                         <input type="date" id="filterDateTo" class="form-control">
                     </div>
-                    <button class="btn btn-primary" onclick="loadTrainings()"><i class="fa-solid fa-magnifying-glass"></i> Cerca</button>
-                    <button class="btn btn-accent" onclick="openAddModal()"><i class="fa-solid fa-plus"></i> Aggiungi</button>
+                    <button class="btn btn-primary" onclick="loadTrainings()"><i
+                            class="fa-solid fa-magnifying-glass"></i> Cerca</button>
+                    <button class="btn btn-accent" onclick="openAddModal()"><i class="fa-solid fa-plus"></i>
+                        Aggiungi</button>
                 </div>
 
                 <div id="trainingsContainer" class="table-responsive">
                     <div class="empty-state">
-                            <p>Nessun allenamento trovato.</p>
+                        <p>Nessun allenamento trovato.</p>
                     </div>
                 </div>
             </div>
@@ -104,8 +110,11 @@
                         <input type="number" id="tDistance" class="form-control" step="0.01" min="0">
                     </div>
                     <div class="form-group">
-                        <label for="tDuration">Durata (min)</label>
-                        <input type="number" id="tDuration" class="form-control" min="0">
+                        <label>Durata</label>
+                        <div class="duration-inputs">
+                            <input type="number" id="tDurationHours" class="form-control" min="0" step="1" placeholder="ore">
+                            <input type="number" id="tDurationMinutes" class="form-control" min="0" max="59" step="1" placeholder="min">
+                        </div>
                     </div>
                 </div>
                 <div class="form-row">
@@ -137,12 +146,15 @@
                     <label for="tNotes">Note</label>
                     <textarea id="tNotes" class="form-control"></textarea>
                 </div>
+                <div id="zoneSection"></div>
                 <div class="modal-actions">
-                    <button type="button" class="btn btn-secondary" onclick="closeModal()">Annulla</button>
-                    <button type="submit" class="btn btn-primary">Salva</button>
+                    <button type="button" id="cancelBtn" class="btn btn-secondary"
+                        onclick="closeModal()">Annulla</button>
+                    <button type="submit" id="saveBtn" class="btn btn-primary">Salva</button>
                 </div>
             </form>
         </div>
     </div>
 </body>
+
 </html>

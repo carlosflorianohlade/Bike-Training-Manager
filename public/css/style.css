@@ -18,11 +18,6 @@ a {
     text-decoration: none;
 }
 
-a:hover {
-    color: #40916C;
-    text-decoration: underline;
-}
-
 .container {
     max-width: 1200px;
     margin: 0 auto;
@@ -318,8 +313,6 @@ textarea.form-control {
 
 .btn-primary:hover {
     background-color: #40916C;
-    color: inherit;
-    text-decoration: inherit;
 }
 
 .btn-secondary {
@@ -347,8 +340,6 @@ textarea.form-control {
 
 .btn-accent:hover {
     background-color: #cc4f30;
-    color: inherit;
-    text-decoration: inherit;
 }
 
 .btn-sm {
@@ -581,6 +572,12 @@ table tr:hover {
     flex-shrink: 0;
 }
 
+.duration-inputs {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 8px;
+}
+
 .goal-actions .btn {
     padding: 4px 10px;
     font-size: 0.8rem;
@@ -693,6 +690,157 @@ table tr:hover {
 
 .fade-in {
     animation: fadeIn 0.3s ease-out;
+}
+
+.zone-section {
+    margin-bottom: 20px;
+    border: 1px solid #e9ecef;
+    border-radius: 8px;
+    overflow: hidden;
+}
+
+.zone-header {
+    background: #F8F9FA;
+    padding: 12px 16px;
+    font-weight: 600;
+    color: #2D6A4F;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    user-select: none;
+}
+
+.zone-toggle {
+    margin-left: auto;
+    font-size: 0.7rem;
+    transition: transform 0.2s;
+}
+
+.zone-body {
+    padding: 8px 12px;
+}
+
+.zone-row {
+    display: grid;
+    grid-template-columns: 32px 1fr 80px 60px 16px 60px 16px 60px 16px;
+    align-items: center;
+    gap: 4px;
+    padding: 4px 0;
+    border-bottom: 1px solid #f0f0f0;
+    font-size: 0.85rem;
+}
+
+.zone-row:last-child {
+    border-bottom: none;
+}
+
+.zone-badge {
+    font-weight: 700;
+    color: #2D6A4F;
+    font-size: 0.75rem;
+}
+
+.zone-name {
+    color: #212529;
+    font-weight: 500;
+}
+
+.zone-range {
+    color: #6C757D;
+    font-size: 0.78rem;
+}
+
+.zone-row input {
+    width: 100%;
+    padding: 4px 6px;
+    border: 1px solid #ced4da;
+    border-radius: 4px;
+    font-size: 0.8rem;
+    text-align: center;
+    font-family: inherit;
+}
+
+.zone-row input:disabled {
+    background-color: #e9ecef;
+    cursor: not-allowed;
+}
+
+.zone-unit {
+    font-weight: 600;
+    color: #6C757D;
+    font-size: 0.75rem;
+    text-align: center;
+}
+
+.zone-table {
+    margin-top: 8px;
+}
+
+.zone-table th,
+.zone-table td {
+    text-align: center;
+}
+
+.zone-table td:first-child {
+    text-align: left;
+}
+
+.zone-dot {
+    display: inline-block;
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    margin-right: 8px;
+}
+
+.calendar-container {
+    padding: 10px 0;
+}
+
+.calendar-header {
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: #2D6A4F;
+    margin-bottom: 12px;
+    text-align: center;
+}
+
+.calendar-grid {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    gap: 4px;
+    max-width: 500px;
+    margin: 0 auto;
+}
+
+.cal-day-header {
+    text-align: center;
+    font-size: 0.75rem;
+    font-weight: 600;
+    color: #6C757D;
+    padding: 4px 0;
+}
+
+.cal-day {
+    aspect-ratio: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 6px;
+    font-size: 0.85rem;
+    color: #212529;
+    background-color: #e9ecef;
+}
+
+.cal-trained {
+    background-color: #2D6A4F;
+    color: #fff;
+    font-weight: 600;
+}
+
+.cal-empty {
+    background: transparent;
 }
 
 footer {
