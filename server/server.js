@@ -22,6 +22,15 @@ app.use('/api', trainingsRoutes);
 app.use('/api', statsRoutes);
 app.use('/api', goalsRoutes);
 
+// Pagina 404 per route sconosciute
+app.use((req, res) => {
+    if (req.path === '/api' || req.path.startsWith('/api/')) {
+        res.status(404).json({ success: false, message: 'Risorsa non trovata' });
+    } else {
+        res.status(404).sendFile(path.join(__dirname, '..', 'public', '404.html'));
+    }
+});
+
 app.use((err, req, res, next) => {
     console.error('ERRORE NON GESTITO:', err.message);
     console.error(err.stack);

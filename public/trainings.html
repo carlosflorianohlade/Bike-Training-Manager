@@ -5,9 +5,13 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Allenamenti — Bike Training Manager</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <link rel="stylesheet" href="css/style.css">
     <script defer src="js/auth.js"></script>
+    <script defer src="js/utils.js"></script>
     <script defer src="js/trainings.js"></script>
 </head>
 
@@ -24,7 +28,7 @@
                             Allenamenti</a></li>
                     <li><a href="statistics.html"><i class="fa-solid fa-chart-line"></i> Statistiche</a></li>
                     <li><a href="profile.html"><i class="fa-solid fa-user"></i> Profilo</a></li>
-                    <li><a href="#" id="logoutLink"><i class="fa-solid fa-right-from-bracket"></i> Esci</a></li>
+                    <li><a href="#" class="logout-link"><i class="fa-solid fa-right-from-bracket"></i> Esci</a></li>
                 </ul>
             </nav>
         </div>
@@ -97,6 +101,7 @@
                     <div class="form-group">
                         <label for="tType">Tipo</label>
                         <select id="tType" class="form-control" required>
+                            <option value="" disabled selected>Seleziona tipo</option>
                             <option value="MTB">MTB</option>
                             <option value="strada">Strada</option>
                             <option value="gravel">Gravel</option>

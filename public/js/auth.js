@@ -35,7 +35,7 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
 
-    const logoutLink = document.getElementById('logoutLink');
+    const logoutLink = document.querySelector('.logout-link');
     if (logoutLink) {
         logoutLink.addEventListener('click', async function(e) {
             e.preventDefault();

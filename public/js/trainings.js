@@ -2,18 +2,6 @@ let currentUser = null;
 let currentSort = 'training_date';
 let currentOrder = 'desc';
 
-function formatDuration(minutes) {
-    if (!minutes) return '-';
-    const h = Math.floor(minutes / 60);
-    const m = minutes % 60;
-    return h + 'h ' + m + 'm';
-}
-
-function formatDate(dateStr) {
-    const d = new Date(dateStr);
-    return d.getDate() + '/' + (d.getMonth() + 1) + '/' + d.getFullYear();
-}
-
 function toInputDateValue(value) {
     const d = new Date(value);
     if (isNaN(d.getTime())) return '';
@@ -158,16 +146,6 @@ function setFormMode(editMode) {
     document.getElementById('cancelBtn').textContent = editMode ? 'Annulla' : 'Chiudi';
 }
 
-function typeBadge(type) {
-    const icons = {
-        'MTB': '<i class="fa-solid fa-mountain"></i> MTB',
-        'strada': '<i class="fa-solid fa-road"></i> Strada',
-        'gravel': '<i class="fa-solid fa-road-barrier"></i> Gravel',
-        'indoor': '<i class="fa-solid fa-house-signal"></i> Indoor'
-    };
-    return '<span class="type-badge type-' + type + '">' + (icons[type] || type) + '</span>';
-}
-
 async function loadTrainings() {
     const params = new URLSearchParams();
     params.set('sort', currentSort);
@@ -245,6 +223,7 @@ function openAddModal() {
     setFormMode(true);
     document.getElementById('trainingForm').reset();
     document.getElementById('tDate').value = new Date().toISOString().split('T')[0];
+    document.getElementById('tType').value = currentUser.preferred_discipline || 'MTB';
     resetZoneFields();
     document.getElementById('trainingModal').classList.remove('hidden');
 }

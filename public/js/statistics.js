@@ -1,12 +1,5 @@
 let currentUser = null;
 
-function formatDuration(minutes) {
-    if (!minutes && minutes !== 0) return '-';
-    const h = Math.floor(minutes / 60);
-    const m = minutes % 60;
-    return h + 'h ' + m + 'm';
-}
-
 async function loadSummary() {
     try {
         const res = await fetch('/api/stats/summary');
@@ -44,7 +37,7 @@ async function loadCharts() {
 
         google.charts.load('current', { packages: ['corechart'] });
         google.charts.setOnLoadCallback(function() {
-            if (zoneData.success) drawZoneTable(zoneData.weeks, month, year);
+            if (zoneData.success) drawZoneTable(zoneData.weeks);
             drawTypeChart();
         });
     } catch (err) {
@@ -78,7 +71,7 @@ function drawTrainingCalendar(daily, year, month) {
     document.getElementById('trainingCalendar').innerHTML = html;
 }
 
-function drawZoneTable(weeks, month, year) {
+function drawZoneTable(weeks) {
     const weekMap = {};
     const zoneCodes = ['z1', 'z2', 'z3', 'z4', 'z5a', 'z5b', 'z5c'];
     const zoneLabels = { z1: 'Z1 Recupero', z2: 'Z2 Aerobico', z3: 'Z3 Tempo', z4: 'Z4 Sotto-soglia', z5a: 'Z5a Sopra-soglia', z5b: 'Z5b Cap. aerobica', z5c: 'Z5c Cap. anaerobica' };
