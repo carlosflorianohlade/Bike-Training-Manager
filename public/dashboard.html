@@ -1,26 +1,30 @@
 <!DOCTYPE html>
 <html lang="it">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Dashboard — Bike Training Manager</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <link rel="stylesheet" href="css/style.css">
     <script defer src="js/auth.js"></script>
     <script defer src="js/utils.js"></script>
     <script defer src="js/dashboard.js"></script>
 </head>
+
 <body>
     <header>
         <div class="container">
-            <div class="logo"><i class="fa-solid fa-person-biking"></i> <a href="dashboard.html">Bike Training Manager</a></div>
+            <div class="logo"><i class="fa-solid fa-person-biking"></i> <a href="dashboard.html">Bike Training
+                    Manager</a></div>
             <button class="menu-toggle" id="menuToggle" aria-label="Apri menu"><i class="fa-solid fa-bars"></i></button>
             <nav>
                 <ul id="mainNav">
-                    <li><a href="dashboard.html" class="active"><i class="fa-solid fa-gauge-high"></i> Dashboard</a></li>
+                    <li><a href="dashboard.html" class="active"><i class="fa-solid fa-gauge-high"></i> Dashboard</a>
+                    </li>
                     <li><a href="trainings.html"><i class="fa-solid fa-person-biking"></i> Allenamenti</a></li>
                     <li><a href="statistics.html"><i class="fa-solid fa-chart-line"></i> Statistiche</a></li>
                     <li><a href="profile.html"><i class="fa-solid fa-user"></i> Profilo</a></li>
@@ -35,7 +39,7 @@
             <h1 class="page-title"><i class="fa-solid fa-gauge-high"></i> Dashboard</h1>
             <p class="page-subtitle" id="welcomeMsg">Caricamento...</p>
 
-            <div class="stats-grid" id="statsGrid">
+            <div class="stats-grid">
                 <div class="stat-card">
                     <div class="stat-icon"><i class="fa-solid fa-road"></i></div>
                     <div class="stat-value" id="totalDistance">0</div>
@@ -71,11 +75,12 @@
             <div class="card">
                 <div class="card-title">
                     <span><i class="fa-solid fa-bullseye"></i> Obiettivi</span>
-                    <button class="btn btn-primary btn-sm" onclick="openGoalModal()"><i class="fa-solid fa-plus"></i> Nuovo</button>
+                    <button class="btn btn-primary btn-sm" onclick="openGoalModal()"><i class="fa-solid fa-plus"></i>
+                        Nuovo</button>
                 </div>
                 <div id="goalsContainer">
                     <div class="empty-state">
-                            <p>Nessun obiettivo impostato. Crea il tuo primo obiettivo!</p>
+                        <p>Nessun obiettivo impostato. Crea il tuo primo obiettivo!</p>
                     </div>
                 </div>
             </div>
@@ -84,7 +89,7 @@
                 <div class="card-title"><i class="fa-solid fa-clock-rotate-left"></i> Ultimi allenamenti</div>
                 <div id="recentTrainings" class="table-responsive">
                     <div class="empty-state">
-                            <p>Nessun allenamento registrato.</p>
+                        <p>Nessun allenamento registrato.</p>
                     </div>
                 </div>
             </div>
@@ -118,8 +123,10 @@
                 <div class="form-group hidden" id="goalDurationFields">
                     <label>Durata</label>
                     <div class="duration-inputs">
-                        <input type="number" id="goalDurationHours" class="form-control" min="0" step="1" placeholder="ore">
-                        <input type="number" id="goalDurationMinutes" class="form-control" min="0" max="59" step="1" placeholder="min">
+                        <input type="number" id="goalDurationHours" class="form-control" min="0" step="1"
+                            placeholder="ore">
+                        <input type="number" id="goalDurationMinutes" class="form-control" min="0" max="59" step="1"
+                            placeholder="min">
                     </div>
                 </div>
                 <div class="form-row">
@@ -154,4 +161,5 @@
         </div>
     </div>
 </body>
+
 </html>

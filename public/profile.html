@@ -1,21 +1,24 @@
 <!DOCTYPE html>
 <html lang="it">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Profilo — Bike Training Manager</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <link rel="stylesheet" href="css/style.css">
     <script defer src="js/auth.js"></script>
     <script defer src="js/profile.js"></script>
 </head>
+
 <body>
     <header>
         <div class="container">
-            <div class="logo"><i class="fa-solid fa-person-biking"></i> <a href="dashboard.html">Bike Training Manager</a></div>
+            <div class="logo"><i class="fa-solid fa-person-biking"></i> <a href="dashboard.html">Bike Training
+                    Manager</a></div>
             <button class="menu-toggle" id="menuToggle" aria-label="Apri menu"><i class="fa-solid fa-bars"></i></button>
             <nav>
                 <ul id="mainNav">
@@ -33,8 +36,6 @@
         <div class="container">
             <h1 class="page-title"><i class="fa-solid fa-user"></i> Profilo</h1>
             <p class="page-subtitle">Gestisci le tue informazioni personali</p>
-
-            <div id="profileAlert"></div>
 
             <div class="card">
                 <div class="card-title"><i class="fa-solid fa-id-card"></i> Dati personali</div>
@@ -56,20 +57,22 @@
                     <div class="form-row">
                         <div class="form-group">
                             <label for="pWeight"><i class="fa-solid fa-weight-scale"></i> Peso (kg)</label>
-                            <input type="number" id="pWeight" class="form-control" step="0.1" min="0">
+                            <input type="number" id="pWeight" class="form-control" step="0.1" min="0" max="200">
                         </div>
                         <div class="form-group">
                             <label for="pHeight"><i class="fa-solid fa-ruler-vertical"></i> Altezza (cm)</label>
-                            <input type="number" id="pHeight" class="form-control" step="0.1" min="0">
+                            <input type="number" id="pHeight" class="form-control" step="0.1" min="0" max="230">
                         </div>
                     </div>
                     <div class="form-row">
                         <div class="form-group">
                             <label for="pLthr"><i class="fa-solid fa-heart-pulse"></i> LTHR (bpm)</label>
-                            <input type="number" id="pLthr" class="form-control" min="0" max="250" placeholder="Frequenza cardiaca di soglia">
+                            <input type="number" id="pLthr" class="form-control" min="0" max="210"
+                                placeholder="Frequenza cardiaca di soglia">
                         </div>
                         <div class="form-group">
-                            <label for="pDiscipline"><i class="fa-solid fa-person-biking"></i> Disciplina preferita</label>
+                            <label for="pDiscipline"><i class="fa-solid fa-person-biking"></i> Disciplina
+                                preferita</label>
                             <select id="pDiscipline" class="form-control">
                                 <option value="MTB">MTB</option>
                                 <option value="strada">Strada</option>
@@ -78,9 +81,12 @@
                             </select>
                         </div>
                     </div>
-                    <button type="submit" class="btn btn-primary"><i class="fa-solid fa-floppy-disk"></i> Salva modifiche</button>
+                    <button type="submit" class="btn btn-primary"><i class="fa-solid fa-floppy-disk"></i> Salva
+                        modifiche</button>
                 </form>
             </div>
+
+            <div id="profileAlert"></div>
 
             <div class="card">
                 <div class="card-title"><i class="fa-solid fa-key"></i> Cambia password</div>
@@ -97,14 +103,16 @@
                         <label for="confirmNewPassword"><i class="fa-solid fa-lock"></i> Conferma nuova password</label>
                         <input type="password" id="confirmNewPassword" class="form-control" required minlength="6">
                     </div>
-                    <button type="submit" class="btn btn-primary"><i class="fa-solid fa-key"></i> Cambia password</button>
+                    <button type="submit" class="btn btn-primary"><i class="fa-solid fa-key"></i> Cambia
+                        password</button>
                 </form>
             </div>
 
             <div class="card">
                 <div class="card-title"><i class="fa-solid fa-right-from-bracket"></i> Esci dall'applicazione</div>
                 <p style="margin-bottom:12px;color:#6C757D;">Effettua il logout dalla piattaforma.</p>
-                <button id="logoutBtn" class="btn btn-danger"><i class="fa-solid fa-right-from-bracket"></i> Logout</button>
+                <button id="logoutBtn" class="btn btn-danger"><i class="fa-solid fa-right-from-bracket"></i>
+                    Logout</button>
             </div>
         </div>
     </main>
@@ -115,4 +123,5 @@
         </div>
     </footer>
 </body>
+
 </html>

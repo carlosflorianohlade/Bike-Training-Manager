@@ -1,8 +1,8 @@
 {
-  "name": "sito_prova",
+  "name": "bike_training_manager",
   "version": "1.0.0",
   "description": "",
-  "main": "index.js",
+  "main": "server.js",
   "directories": {
     "doc": "docs"
   },
