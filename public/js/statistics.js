@@ -51,14 +51,15 @@ function drawTrainingCalendar(daily, year, month) {
     const trainingDays = {};
     daily.forEach(d => { trainingDays[d.day] = true; });
 
-    const dayNames = ['Dom', 'Lun', 'Mar', 'Mer', 'Gio', 'Ven', 'Sab'];
+    const dayNames = ['Lun', 'Mar', 'Mer', 'Gio', 'Ven', 'Sab', 'Dom'];
     const monthName = ['Gennaio', 'Febbraio', 'Marzo', 'Aprile', 'Maggio', 'Giugno', 'Luglio', 'Agosto', 'Settembre', 'Ottobre', 'Novembre', 'Dicembre'][month - 1];
 
     let html = '<div class="calendar-header">' + monthName + ' ' + year + '</div>';
     html += '<div class="calendar-grid">';
     dayNames.forEach(d => { html += '<div class="cal-day-header">' + d + '</div>'; });
 
-    for (let i = 0; i < firstDay; i++) {
+    const offset = (firstDay + 6) % 7;
+    for (let i = 0; i < offset; i++) {
         html += '<div class="cal-day cal-empty"></div>';
     }
 
