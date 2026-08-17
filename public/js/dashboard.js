@@ -175,7 +175,7 @@ document.addEventListener('DOMContentLoaded', async function() {
             month: monthVal ? parseInt(monthVal) : null
         };
 
-        if (!goal.year || goal.year < 2020) {
+        if (!goal.year || goal.year < 2026) {
             alert('Inserisci un anno valido.');
             return;
         }
