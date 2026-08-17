@@ -76,7 +76,7 @@ function buildZoneSection(lthr) {
         return;
     }
     const bounds = computeZoneBounds(lthr);
-    let html = '<div class="zone-section"><div class="zone-header" onclick="toggleZoneSection()"><i class="fa-solid fa-heart-pulse"></i> Zone cardiache <span class="zone-toggle">&#9660;</span></div><div class="zone-body hidden">';
+    let html = '<div class="zone-section"><div class="zone-header" onclick="toggleZoneSection()"><i class="fa-solid fa-heart-pulse"></i> Zone cardiache <span class="zone-toggle">&#9654;</span></div><div class="zone-body hidden">';
     ZONE_DEFS.forEach((def, idx) => {
         html += '<div class="zone-row" data-zone="' + def.code + '">' +
             '<span class="zone-badge">' + def.code + '</span>' +
