@@ -309,11 +309,7 @@ document.addEventListener('DOMContentLoaded', async function() {
     document.getElementById('tDate').value = new Date().toISOString().split('T')[0];
     await loadTrainings();
 
-    const profileRes = await fetch('/api/profile');
-    const profileData = await profileRes.json();
-    if (profileData.success) {
-        buildZoneSection(profileData.user.lthr);
-    }
+    buildZoneSection(currentUser.lthr);
 
     document.getElementById('tDistance').addEventListener('input', calculateAvgSpeed);
     document.getElementById('tDurationHours').addEventListener('input', calculateAvgSpeed);
