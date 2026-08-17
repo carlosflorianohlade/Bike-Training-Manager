@@ -3,7 +3,7 @@ let currentUser = null;
 function showProfileAlert(message, type) {
     const container = document.getElementById('profileAlert');
     container.innerHTML = '<div class="alert alert-' + type + '">' + escapeHtml(message) + '</div>';
-    setTimeout(() => { container.innerHTML = ''; }, 4000);
+    setTimeout(() => { container.innerHTML = ''; }, 5000);
 }
 
 document.addEventListener('DOMContentLoaded', async function() {
