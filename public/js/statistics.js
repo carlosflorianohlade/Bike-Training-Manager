@@ -93,15 +93,18 @@ function drawZoneTable(zones) {
         return h + 'h ' + m + 'm';
     }
 
-    let html = '<table class="zone-table"><thead><tr><th>Zona</th><th>Totale</th></tr></thead><tbody>';
+    let html = '<div class="zone-list">';
 
     zoneCodes.forEach((code, idx) => {
         const secs = zoneMap[code] || 0;
-        html += '<tr><td><span class="zone-dot" style="background:' + zoneColors[idx] + '"></span>' + zoneLabels[code] + '</td>';
-        html += '<td><strong>' + fmt(secs) + '</strong></td></tr>';
+        html += '<div class="zone-row-item">' +
+            '<span class="zone-dot" style="background:' + zoneColors[idx] + '"></span>' +
+            '<span class="zone-name">' + zoneLabels[code] + '</span>' +
+            '<span class="zone-total">' + fmt(secs) + '</span>' +
+            '</div>';
     });
 
-    html += '</tbody></table>';
+    html += '</div>';
     document.getElementById('zoneChart').innerHTML = html;
 }
 

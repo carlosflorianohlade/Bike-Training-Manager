@@ -836,13 +836,42 @@ table tr:hover {
     margin-top: 8px;
 }
 
+.zone-list {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    margin-top: 8px;
+}
+
+.zone-row-item {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 12px;
+    border-radius: 6px;
+    background: var(--bg);
+    font-size: 0.9rem;
+}
+
+.zone-row-item .zone-name {
+    flex: 1;
+    font-weight: 500;
+    color: var(--text);
+}
+
+.zone-row-item .zone-total {
+    font-weight: 700;
+    color: var(--primary);
+    white-space: nowrap;
+}
+
 .zone-table th,
 .zone-table td {
     text-align: center;
 }
 
 .zone-table td:first-child {
-    text-align: left;
+    text-align: center;
 }
 
 .zone-dot {
