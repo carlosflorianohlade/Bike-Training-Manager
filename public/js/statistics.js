@@ -37,7 +37,7 @@ async function loadCharts() {
 
         google.charts.load('current', { packages: ['corechart'] });
         google.charts.setOnLoadCallback(function() {
-            if (zoneData.success) drawZoneTable(zoneData.weeks);
+            if (zoneData.success) drawZoneTable(zoneData.zones);
             drawTypeChart();
         });
     } catch (err) {
@@ -72,19 +72,16 @@ function drawTrainingCalendar(daily, year, month) {
     document.getElementById('trainingCalendar').innerHTML = html;
 }
 
-function drawZoneTable(weeks) {
-    const weekMap = {};
+function drawZoneTable(zones) {
     const zoneCodes = ['z1', 'z2', 'z3', 'z4', 'z5a', 'z5b', 'z5c'];
     const zoneLabels = { z1: 'Z1 Recupero', z2: 'Z2 Aerobico', z3: 'Z3 Tempo', z4: 'Z4 Sotto-soglia', z5a: 'Z5a Sopra-soglia', z5b: 'Z5b Cap. aerobica', z5c: 'Z5c Cap. anaerobica' };
     const zoneColors = ['#95D5B2', '#52B788', '#2D6A4F', '#FFD166', '#F4A261', '#E76F51', '#D90429'];
 
-    weeks.forEach(w => {
-        if (!weekMap[w.week_num]) weekMap[w.week_num] = {};
-        weekMap[w.week_num][w.zone_code] = Number(w.total_seconds);
-    });
+    const zoneMap = {};
+    zones.forEach(z => { zoneMap[z.zone_code] = Number(z.total_seconds); });
 
-    const weekNums = Object.keys(weekMap).map(Number).sort((a, b) => a - b);
-    if (!weekNums.length) {
+    const hasData = zoneCodes.some(code => zoneMap[code] > 0);
+    if (!hasData) {
         document.getElementById('zoneChart').innerHTML = '<div class="empty-state"><p>Nessun dato per le zone cardiache questo mese.</p></div>';
         return;
     }
@@ -96,19 +93,12 @@ function drawZoneTable(weeks) {
         return h + 'h ' + m + 'm';
     }
 
-    let html = '<table class="zone-table"><thead><tr><th>Zona</th>';
-    weekNums.forEach(w => { html += '<th>Sett. ' + w + '</th>'; });
-    html += '<th>Totale</th></tr></thead><tbody>';
+    let html = '<table class="zone-table"><thead><tr><th>Zona</th><th>Totale</th></tr></thead><tbody>';
 
     zoneCodes.forEach((code, idx) => {
-        let total = 0;
+        const secs = zoneMap[code] || 0;
         html += '<tr><td><span class="zone-dot" style="background:' + zoneColors[idx] + '"></span>' + zoneLabels[code] + '</td>';
-        weekNums.forEach(w => {
-            const secs = weekMap[w][code] || 0;
-            total += secs;
-            html += '<td>' + fmt(secs) + '</td>';
-        });
-        html += '<td><strong>' + fmt(total) + '</strong></td></tr>';
+        html += '<td><strong>' + fmt(secs) + '</strong></td></tr>';
     });
 
     html += '</tbody></table>';

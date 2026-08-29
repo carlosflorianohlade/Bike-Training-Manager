@@ -8,10 +8,10 @@ Built as an academic project for the "Web Programming" course.
 
 - **User authentication** — Register, login, and logout with JWT-based authentication stored in httpOnly cookies
 - **Training log** — Full CRUD for bike workouts with distance, duration, elevation gain, heart rate, cadence, notes, and time spent in each heart-rate zone
-- **Heart-rate zones** — Based on the user's LTHR (lactate threshold heart rate), the app builds 7 training zones (Z1-Z5c); during each workout you record time per zone and the statistics page shows a weekly breakdown
+- **Heart-rate zones** — Based on the user's LTHR (lactate threshold heart rate), the app builds 7 training zones (Z1-Z5c); during each workout you record time per zone and the statistics page shows a monthly total per zone
 - **Smart filters** — Search by text, filter by discipline and date range, sort by any column
 - **Dashboard** — Summary statistics (total distance, hours, elevation, average per ride, last ride) and recent activity at a glance
-- **Statistics** — Training calendar for the current month, weekly heart-rate zone table, and pie chart for discipline distribution (Google Charts)
+- **Statistics** — Training calendar for the current month, monthly heart-rate zone table, and pie chart for discipline distribution (Google Charts)
 - **Goal tracking** — Set monthly or yearly targets for distance, duration, or elevation with real-time progress bars
 - **Profile management** — Edit personal info (name, weight, height, LTHR, preferred discipline) and change password
 - **404 error page** — Unknown routes are served a branded "Page not found" page (HTML) while unknown `/api` routes get a JSON 404
