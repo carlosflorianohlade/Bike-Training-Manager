@@ -94,6 +94,8 @@ async function loadRecentTrainings() {
 }
 
 function openGoalModal() {
+    document.body.style.overflow = 'hidden';
+
     document.getElementById('goalModalTitle').textContent = 'Nuovo obiettivo';
     document.getElementById('goalEditId').value = '';
     document.getElementById('goalForm').reset();
