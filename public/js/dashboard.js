@@ -110,6 +110,8 @@ async function openEditGoal(id) {
     const goal = data.goals.find(g => g.id === id);
     if (!goal) return;
 
+    document.body.style.overflow = 'hidden';
+
     document.getElementById('goalModalTitle').textContent = 'Modifica obiettivo';
     document.getElementById('goalEditId').value = goal.id;
     document.getElementById('goalType').value = goal.type;
@@ -140,6 +142,7 @@ async function deleteGoal(id) {
 
 function closeGoalModal() {
     document.getElementById('goalModal').classList.add('hidden');
+    document.body.style.overflow = '';
 }
 
 function toggleGoalDurationFields() {

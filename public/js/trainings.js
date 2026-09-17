@@ -218,6 +218,8 @@ function sortBy(field) {
 }
 
 function openAddModal() {
+    document.body.style.overflow = 'hidden';
+
     document.getElementById('modalTitle').textContent = 'Nuovo allenamento';
     document.getElementById('editId').value = '';
     setFormMode(true);
@@ -230,6 +232,8 @@ function openAddModal() {
 
 async function visualizeModal(id) {
     try {
+        document.body.style.overflow = 'hidden';
+
         const res = await fetch('/api/trainings/' + id);
         const data = await res.json();
         if (!data.success) return;
@@ -258,6 +262,8 @@ async function visualizeModal(id) {
 
 async function openEditModal(id) {
     try {
+        document.body.style.overflow = 'hidden';
+
         const res = await fetch('/api/trainings/' + id);
         const data = await res.json();
         if (!data.success) return;
@@ -287,6 +293,7 @@ async function openEditModal(id) {
 
 function closeModal() {
     document.getElementById('trainingModal').classList.add('hidden');
+    document.body.style.overflow = '';
 }
 
 async function deleteTraining(id) {
