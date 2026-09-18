@@ -55,7 +55,7 @@ a {
 }
 
 main {
-    flex: 1;
+    flex: 1; /* risolve il problema dello sticky footer, impostando flex-grow: 1; flex-shrink: 1; flex-basis: 0% */
     padding: 30px 0;
 }
 
