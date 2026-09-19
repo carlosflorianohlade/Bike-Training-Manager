@@ -1,8 +1,8 @@
 {
   "name": "bike_training_manager",
   "version": "1.0.0",
-  "description": "",
-  "main": "server.js",
+  "description": "Gestore personale per allenamenti in bici",
+  "main": "server/server.js",
   "directories": {
     "doc": "docs"
   },
@@ -11,7 +11,7 @@
     "dev": "nodemon server/server.js"
   },
   "keywords": [],
-  "author": "",
+  "author": "Hlade Carlos Floriano",
   "license": "ISC",
   "dependencies": {
     "bcrypt": "^6.0.0",
