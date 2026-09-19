@@ -53,7 +53,7 @@ router.post('/goals', authenticateToken, async (req, res) => {
     try {
         const { type, target_value, year, month } = req.body;
 
-        if (!type || !target_value || !year)
+        if (!(['distance', 'duration', 'elevation'].includes(type)) || !target_value || !year)
             return res.status(400).json({ success: false, message: 'Tipo, target e anno obbligatori'})
 
         const period = month ? 'monthly' : 'yearly';
@@ -72,7 +72,7 @@ router.put('/goals/:id', authenticateToken, async (req, res) => {
     try {
         const { target_value, type, year, month } = req.body;
 
-        if (!type || !target_value || !year)
+        if (!(['distance', 'duration', 'elevation'].includes(type)) || !target_value || !year)
             return res.status(400).json({ success: false, message: 'Tipo, target e anno obbligatori'})
         
         const period = month ? 'monthly' : 'yearly';
