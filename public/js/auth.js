@@ -31,7 +31,9 @@ document.addEventListener('DOMContentLoaded', function() {
     const menuToggle = document.getElementById('menuToggle');
     if (menuToggle) {
         menuToggle.addEventListener('click', function() {
-            document.getElementById('mainNav').classList.toggle('open');
+            const nav = document.getElementById('mainNav');
+            nav.classList.toggle('open');
+            document.body.style.overflow = nav.classList.contains('open') ? 'hidden' : '';
         });
     }
 

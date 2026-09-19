@@ -190,10 +190,11 @@ async function loadTrainings() {
                 '<td>' + formatDuration(t.duration) + '</td>' +
                 '<td>' + (t.elevation_gain || '-') + '</td>' +
                 '<td>' + (t.avg_speed ? Number(t.avg_speed).toFixed(1) : '-') + '</td>' +
-                '<td class="table-actions" onclick="event.stopPropagation()">' +
+                '<td onclick="event.stopPropagation()">' +
+                '<div class="table-actions">' +
                 '<button class="btn btn-primary btn-sm" onclick="openEditModal(' + t.id + ')"><i class="fa-solid fa-pen"></i></button>' +
                 '<button class="btn btn-danger btn-sm" onclick="deleteTraining(' + t.id + ')"><i class="fa-solid fa-trash"></i></button>' +
-                '</td></tr>';
+                '</div></td></tr>';
         }).join('');
         html += '</tbody></table>';
         container.innerHTML = html;
