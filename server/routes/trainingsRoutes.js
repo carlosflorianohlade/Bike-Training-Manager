@@ -43,6 +43,12 @@ router.get('/trainings', authenticateToken, async (req, res) => {
 router.post('/trainings', authenticateToken, async (req, res) => {
     try {
         const { title, training_date, type, distance, duration, elevation_gain, avg_speed, avg_hr, max_hr, cadence, notes, zone_times } = req.body;
+
+        if (!title || !training_date || !type)
+            return res.status(400).json({ success: false, message: 'Titolo, data e tipo sono obbligatori'});
+        if (!['MTB', 'strada', 'gravel', 'indoor'].includes(type))
+            return res.status(400).json({ success: false, message: 'Tipo non valido'});
+
         const [result] = await db.execute(
             `INSERT INTO trainings (user_id, title, training_date, type, distance, duration, elevation_gain, avg_speed, avg_hr, max_hr, cadence, notes)
              VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
@@ -86,6 +92,12 @@ router.get('/trainings/:id', authenticateToken, async (req, res) => {
 router.put('/trainings/:id', authenticateToken, async (req, res) => {
     try {
         const { title, training_date, type, distance, duration, elevation_gain, avg_speed, avg_hr, max_hr, cadence, notes, zone_times } = req.body;
+
+        if (!title || !training_date || !type)
+            return res.status(400).json({ success: false, message: 'Titolo, data e tipo sono obbligatori'});
+        if (!['MTB', 'strada', 'gravel', 'indoor'].includes(type))
+            return res.status(400).json({ success: false, message: 'Tipo non valido'});
+        
         const [result] = await db.execute(
             `UPDATE trainings SET title = ?, training_date = ?, type = ?, distance = ?, duration = ?, elevation_gain = ?, avg_speed = ?, avg_hr = ?, max_hr = ?, cadence = ?, notes = ?
              WHERE id = ? AND user_id = ?`,

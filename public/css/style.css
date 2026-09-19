@@ -738,7 +738,7 @@ table tr:hover {
 }
 
 .fade-in {
-    animation: fadeIn 0.3s ease-out;
+    animation: fadeIn 0.5s ease-out;
 }
 
 /* ============================================================
@@ -766,7 +766,6 @@ table tr:hover {
 .zone-toggle {
     margin-left: auto;
     font-size: 0.7rem;
-    transition: transform 0.2s;
 }
 
 .zone-body {
@@ -828,9 +827,6 @@ table tr:hover {
 /* ============================================================
    Tabella zone e calendario
    ============================================================ */
-.zone-table {
-    margin-top: 8px;
-}
 
 .zone-list {
     display: flex;
@@ -859,15 +855,6 @@ table tr:hover {
     font-weight: 700;
     color: var(--primary);
     white-space: nowrap;
-}
-
-.zone-table th,
-.zone-table td {
-    text-align: center;
-}
-
-.zone-table td:first-child {
-    text-align: center;
 }
 
 .zone-dot {
@@ -907,7 +894,7 @@ table tr:hover {
 }
 
 .cal-day {
-    aspect-ratio: 1;
+    aspect-ratio: 1; /* rapporto width-height 1:1 */
     display: flex;
     align-items: center;
     justify-content: center;
@@ -942,19 +929,6 @@ footer .container{
     justify-content: space-between;
 }
 
-/* ============================================================
-   Accessibilità: focus visibile da tastiera
-   ============================================================ */
-a:focus-visible,
-.btn:focus-visible,
-.menu-toggle:focus-visible {
-    outline: 2px solid var(--primary-light);
-    outline-offset: 2px;
-}
-
-.form-control:focus-visible {
-    outline: 2px solid var(--primary-light);
-}
 
 /* ============================================================
    Responsive
@@ -1060,18 +1034,6 @@ a:focus-visible,
     }
 }
 
-/* ============================================================
-   Rispetta le preferenze di riduzione del movimento dell'utente
-   ============================================================ */
-@media (prefers-reduced-motion: reduce) {
-    *,
-    *::before,
-    *::after {
-        animation-duration: 0.01ms !important;
-        animation-iteration-count: 1 !important;
-        transition-duration: 0.01ms !important;
-    }
-}
 
 /* ============================================================
    Utility (dichiarata per ultima per avere la precedenza

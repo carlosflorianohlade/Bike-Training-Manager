@@ -52,6 +52,10 @@ router.get('/goals', authenticateToken, async (req, res) => {
 router.post('/goals', authenticateToken, async (req, res) => {
     try {
         const { type, target_value, year, month } = req.body;
+
+        if (!type || !target_value || !year)
+            return res.status(400).json({ success: false, message: 'Tipo, target e anno obbligatori'})
+
         const period = month ? 'monthly' : 'yearly';
         const [result] = await db.execute(
             'INSERT INTO goals (user_id, type, target_value, period, year, month) VALUES (?, ?, ?, ?, ?, ?)',
@@ -67,6 +71,10 @@ router.post('/goals', authenticateToken, async (req, res) => {
 router.put('/goals/:id', authenticateToken, async (req, res) => {
     try {
         const { target_value, type, year, month } = req.body;
+
+        if (!type || !target_value || !year)
+            return res.status(400).json({ success: false, message: 'Tipo, target e anno obbligatori'})
+        
         const period = month ? 'monthly' : 'yearly';
         const [result] = await db.execute(
             'UPDATE goals SET target_value = ?, type = ?, period = ?, year = ?, month = ? WHERE id = ? AND user_id = ?',
