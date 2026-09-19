@@ -492,7 +492,7 @@ table tr:hover {
    Landing: hero e feature
    ============================================================ */
 .hero {
-    background: linear-gradient(rgba(20, 50, 35, 0.55), rgba(20, 50, 35, 0.85)), url('../images/intro.avif') center 35%/cover no-repeat;
+    background: linear-gradient(rgba(20, 50, 35, 0.55), rgba(20, 50, 35, 0.85), rgba(20, 50, 35, 0.55)), url('../images/intro.avif') center 35%/cover no-repeat;
     color: var(--white);
     min-height: 55vh;
     padding: 100px 0;
@@ -504,16 +504,14 @@ table tr:hover {
 
 .hero h1 {
     font-size: 2.5rem;
-    margin-bottom: 16px;
+    margin-bottom: 14px;
 }
 
 .hero p {
     font-size: 1.15rem;
     max-width: 600px;
     margin: 0 auto 30px;
-    opacity: 1;
     line-height: 1.6;
-    text-shadow: 0 1px 4px rgba(0, 0, 0, 0.5);
 }
 
 .hero .btn {
@@ -642,9 +640,8 @@ table tr:hover {
 
 .progress-bar .progress-fill {
     height: 100%;
-    background: var(--primary-light);
+    background: linear-gradient(90deg, var(--primary-lighter), var(--primary));
     border-radius: 5px;
-    transition: width 0.4s ease;
 }
 
 .progress-text {
