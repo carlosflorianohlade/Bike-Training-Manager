@@ -1,5 +1,3 @@
-let currentUser = null;
-
 function deadlineLabel(g) {
     if (g.month) return 'scad. ' + g.month + '/' + g.year;
     return 'scad. ' + g.year;
@@ -158,7 +156,7 @@ function toggleGoalDurationFields() {
 }
 
 document.addEventListener('DOMContentLoaded', async function() {
-    currentUser = await checkAuth();
+    const currentUser = await checkAuth();
     if (!currentUser) return;
     document.getElementById('welcomeMsg').textContent = 'Benvenuto, ' + currentUser.first_name + '! Ecco il riepilogo della tua attività.';
 
