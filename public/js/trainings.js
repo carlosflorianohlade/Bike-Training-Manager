@@ -48,16 +48,9 @@ const ZONE_DEFS = [
 
 function computeZoneBounds(lthr) {
     if (!lthr) return null;
-    return [
-        0,
-        Math.floor(lthr * 0.82),
-        Math.floor(lthr * 0.89),
-        Math.floor(lthr * 0.94),
-        lthr,
-        Math.floor(lthr * 1.03),
-        Math.floor(lthr * 1.06),
-        Infinity
-    ];
+    const endges = ZONE_DEFS.map(def => Math.floor(lthr * def.lo));
+    endges.push(Infinity);
+    return endges;
 }
 
 function formatZoneRange(bounds, idx) {
