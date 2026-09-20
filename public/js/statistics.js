@@ -1,5 +1,3 @@
-let currentUser = null;
-
 async function loadSummary() {
     try {
         const res = await fetch('/api/stats/summary');

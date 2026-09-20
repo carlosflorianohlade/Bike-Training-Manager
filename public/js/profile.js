@@ -1,5 +1,3 @@
-let currentUser = null;
-
 function showProfileAlert(message, type) {
     const container = document.getElementById('profileAlert');
     container.innerHTML = '<div class="alert alert-' + type + '">' + escapeHtml(message) + '</div>';
@@ -7,7 +5,7 @@ function showProfileAlert(message, type) {
 }
 
 document.addEventListener('DOMContentLoaded', async function() {
-    currentUser = await checkAuth();
+    const currentUser = await checkAuth();
     if (!currentUser) return;
 
     document.getElementById('pFirstName').value = currentUser.first_name;
