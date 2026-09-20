@@ -139,8 +139,7 @@ async function drawTypeChart() {
 }
 
 document.addEventListener('DOMContentLoaded', async function() {
-    currentUser = await checkAuth();
-    if (!currentUser) return;
+    if (!await checkAuth()) return;
 
     await loadSummary();
     await loadCharts();
