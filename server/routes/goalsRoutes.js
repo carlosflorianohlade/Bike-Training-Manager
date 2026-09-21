@@ -12,13 +12,13 @@ router.get('/goals', authenticateToken, async (req, res) => {
         );
 
         const goalsWithProgress = await Promise.all(goals.map(async (goal) => {
-            let startDate, endDate;
+            let endDate;
+            const startDate = goal.year + '-01-01';
+
             if (goal.month) {
-                startDate = goal.year + '-' + String(goal.month).padStart(2, '0') + '-01';
                 const lastDay = new Date(goal.year, goal.month, 0).getDate();
                 endDate = goal.year + '-' + String(goal.month).padStart(2, '0') + '-' + String(lastDay).padStart(2, '0');
             } else {
-                startDate = goal.year + '-01-01';
                 endDate = goal.year + '-12-31';
             }
 
