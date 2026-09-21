@@ -44,7 +44,7 @@ async function loadCharts() {
 }
 
 function drawTrainingCalendar(daily, year, month) {
-    const daysInMonth = new Date(year, month, 0).getDate();
+    const daysInMonth = new Date(year, month, 0).getDate(); //giorno 0 del mese + 1 equivale all'ultimo giorno del mese corrente
     const firstDay = new Date(year, month - 1, 1).getDay();
     const trainingDays = {};
     daily.forEach(d => { trainingDays[d.day] = true; });

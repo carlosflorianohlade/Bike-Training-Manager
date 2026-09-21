@@ -50,8 +50,7 @@ router.post('/trainings', authenticateToken, async (req, res) => {
             return res.status(400).json({ success: false, message: 'Tipo non valido'});
 
         const [result] = await db.execute(
-            `INSERT INTO trainings (user_id, title, training_date, type, distance, duration, elevation_gain, avg_speed, avg_hr, max_hr, cadence, notes)
-             VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+            `INSERT INTO trainings (user_id, title, training_date, type, distance, duration, elevation_gain, avg_speed, avg_hr, max_hr, cadence, notes) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
             [req.user.userId, title, training_date, type, distance || null, duration || null, elevation_gain || null, avg_speed || null, avg_hr || null, max_hr || null, cadence || null, notes || null]
         );
         const trainingId = result.insertId;
@@ -99,8 +98,7 @@ router.put('/trainings/:id', authenticateToken, async (req, res) => {
             return res.status(400).json({ success: false, message: 'Tipo non valido'});
         
         const [result] = await db.execute(
-            `UPDATE trainings SET title = ?, training_date = ?, type = ?, distance = ?, duration = ?, elevation_gain = ?, avg_speed = ?, avg_hr = ?, max_hr = ?, cadence = ?, notes = ?
-             WHERE id = ? AND user_id = ?`,
+            `UPDATE trainings SET title = ?, training_date = ?, type = ?, distance = ?, duration = ?, elevation_gain = ?, avg_speed = ?, avg_hr = ?, max_hr = ?, cadence = ?, notes = ? WHERE id = ? AND user_id = ?`,
             [title, training_date, type, distance || null, duration || null, elevation_gain || null, avg_speed || null, avg_hr || null, max_hr || null, cadence || null, notes || null, req.params.id, req.user.userId]
         );
         if (result.affectedRows === 0) return res.status(404).json({ success: false, message: 'Allenamento non trovato' });
