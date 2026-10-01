@@ -275,6 +275,7 @@ async function visualizeModal(id) {
         document.getElementById('tCadence').value = t.cadence;
         document.getElementById('tNotes').value = t.notes;
         setZoneTimes(t.zone_times);
+        await refreshZoneSection();
 
         setFormMode(false);
         document.getElementById('trainingModal').classList.remove('hidden');
