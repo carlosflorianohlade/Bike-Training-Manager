@@ -29,8 +29,8 @@ router.put('/profile', authenticateToken, async (req, res) => {
         const validatedHeight = (height !== undefined && height !== '' && height !== null) ? parseFloat(height) : null;
 
         // Validate that FTP is provided when zone_method is ftp
-        if (validatedZoneMethod === 'ftp' && !validatedFtp) {
-            return res.status(400).json({ success: false, message: 'FTP è obbligatorio quando il metodo di zona è FTP' });
+        if (validatedZoneMethod === 'ftp' && (validatedFtp === null || validatedFtp <= 0)) {
+            return res.status(400).json({ success: false, message: 'FTP deve essere un valore positivo quando il metodo di zona è FTP' });
         }
 
         await db.execute(

@@ -18,12 +18,12 @@ document.addEventListener('DOMContentLoaded', async function() {
     document.getElementById('pZoneMethod').value = currentUser.zone_method || 'lthr';
     document.getElementById('pDiscipline').value = currentUser.preferred_discipline || 'MTB';
 
-    document.getElementById('profileForm').addEventListener('submit', async function(e) {
+document.getElementById('profileForm').addEventListener('submit', async function(e) {
         e.preventDefault();
         const ftpValue = document.getElementById('pFtp').value;
         const zoneMethod = document.getElementById('pZoneMethod').value;
-        if (zoneMethod === 'ftp' && (!ftpValue || ftpValue.trim() === '')) {
-            showProfileAlert('FTP è obbligatorio quando il metodo di zona è FTP', 'error');
+        if (zoneMethod === 'ftp' && (!ftpValue || ftpValue.trim() === '' || parseInt(ftpValue) <= 0)) {
+            showProfileAlert('FTP deve essere un valore positivo quando il metodo di zona è FTP', 'error');
             return;
         }
         const data = {
