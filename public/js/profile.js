@@ -20,17 +20,6 @@ document.addEventListener('DOMContentLoaded', async function() {
 
     document.getElementById('profileForm').addEventListener('submit', async function(e) {
         e.preventDefault();
-        const ftpValue = document.getElementById('pFtp').value;
-        const lthrValue = document.getElementById('pLthr').value;
-        const zoneMethod = document.getElementById('pZoneMethod').value;
-        if (zoneMethod === 'ftp' && (!ftpValue || ftpValue.trim() === '' || parseInt(ftpValue) <= 0)) {
-            showProfileAlert('FTP deve essere un valore positivo quando il metodo di zona è FTP', 'error');
-            return;
-        }
-        if (zoneMethod === 'lthr' && (!lthrValue || lthrValue.trim() === '' || parseInt(lthrValue) <= 0)) {
-            showProfileAlert('LTHR deve essere un valore positivo quando il metodo di zona è LTHR', 'error');
-            return;
-        }
         const data = {
             first_name: document.getElementById('pFirstName').value,
             last_name: document.getElementById('pLastName').value,
