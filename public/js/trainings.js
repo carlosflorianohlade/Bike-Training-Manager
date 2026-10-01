@@ -48,13 +48,13 @@ const HR_ZONE_DEFS = [
 
 const POWER_ZONE_DEFS = [
     // Coggan 7-level power zone model
-    { code: 'Z1', name: 'Recupero attivo', lo: 0, hi: 0.54 },
-    { code: 'Z2', name: 'Endurance', lo: 0.56, hi: 0.69 },
-    { code: 'Z3', name: 'Tempo', lo: 0.70, hi: 0.84 },
-    { code: 'Z4', name: 'Soglia lattacida', lo: 0.85, hi: 1.03 },
+    { code: 'Z1', name: 'Recupero attivo', lo: 0, hi: 0.55 },
+    { code: 'Z2', name: 'Endurance', lo: 0.55, hi: 0.75 },
+    { code: 'Z3', name: 'Tempo', lo: 0.75, hi: 0.90 },
+    { code: 'Z4', name: 'Soglia lattacida', lo: 0.90, hi: 1.05 },
     { code: 'Z5', name: 'VO₂max', lo: 1.05, hi: 1.20 },
-    { code: 'Z6', name: 'Capacità anaerobica', lo: 1.20, hi: 1.40 },
-    { code: 'Z7', name: 'Potenza neuromuscolare', lo: 1.40, hi: 999 }
+    { code: 'Z6', name: 'Capacità anaerobica', lo: 1.20, hi: 1.50 },
+    { code: 'Z7', name: 'Potenza neuromuscolare', lo: 1.50, hi: 999 }
 ];
 
 function buildZoneSection(method, value) {
@@ -77,7 +77,7 @@ function buildZoneSection(method, value) {
         const u = unit || 'bpm';
         let range;
         if (idx === 0) range = '0-' + hi + ' ' + u;
-        else if (hi >= 999 * value) range = '> ' + lo + ' ' + u;
+        else if (hi >= 999 * value) range = '> ' + (lo + 1) + ' ' + u;
         else range = (lo + 1) + '-' + hi + ' ' + u;
         
         html += '<div class="zone-row" data-zone="' + def.code + '">' +
