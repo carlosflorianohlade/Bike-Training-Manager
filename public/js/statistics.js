@@ -71,8 +71,14 @@ function drawTrainingCalendar(daily, year, month) {
 }
 
 function drawZoneTable(zones) {
-    const zoneCodes = ['z1', 'z2', 'z3', 'z4', 'z5a', 'z5b', 'z5c'];
-    const zoneLabels = { z1: 'Z1 Recupero', z2: 'Z2 Aerobico', z3: 'Z3 Tempo', z4: 'Z4 Sotto-soglia', z5a: 'Z5a Sopra-soglia', z5b: 'Z5b Cap. aerobica', z5c: 'Z5c Cap. anaerobica' };
+    // Detecta se sono zone potenza (Z1-Z7) o cuore (z1-z5c)
+    const hasPowerZones = zones.some(z => z.zone_code.startsWith('Z'));
+    const zoneCodes = hasPowerZones 
+        ? ['Z1', 'Z2', 'Z3', 'Z4', 'Z5', 'Z6', 'Z7']
+        : ['z1', 'z2', 'z3', 'z4', 'z5a', 'z5b', 'z5c'];
+    const zoneLabels = hasPowerZones
+        ? { Z1: 'Z1 Recupero attivo', Z2: 'Z2 Endurance', Z3: 'Z3 Tempo', Z4: 'Z4 Soglia lattacida', Z5: 'Z5 VO₂max', Z6: 'Z6 Cap. anaerobica', Z7: 'Z7 Potenza neuromuscolare' }
+        : { z1: 'Z1 Recupero', z2: 'Z2 Aerobico', z3: 'Z3 Tempo', z4: 'Z4 Sotto-soglia', z5a: 'Z5a Sopra-soglia', z5b: 'Z5b Cap. aerobica', z5c: 'Z5c Cap. anaerobica' };
     const zoneColors = ['#95D5B2', '#52B788', '#2D6A4F', '#FFD166', '#F4A261', '#E76F51', '#D90429'];
 
     const zoneMap = {};

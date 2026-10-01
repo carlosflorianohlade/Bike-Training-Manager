@@ -47,36 +47,15 @@ const HR_ZONE_DEFS = [
 ];
 
 const POWER_ZONE_DEFS = [
-    // Coggan 7-level power zone model (from design spec - gapped boundaries)
-    { code: 'z1', name: 'Recupero', lo: 0, hi: 0.54 },
-    { code: 'z2', name: 'Aerobico', lo: 0.56, hi: 0.69 },
-    { code: 'z3', name: 'Tempo', lo: 0.70, hi: 0.84 },
-    { code: 'z4', name: 'Sotto-soglia', lo: 0.85, hi: 1.03 },
-    { code: 'z5a', name: 'Sopra-soglia', lo: 1.05, hi: 1.20 },
-    { code: 'z5b', name: 'Capacità aerobica', lo: 1.20, hi: 1.40 },
-    { code: 'z5c', name: 'Capacità anaerobica', lo: 1.40, hi: 999 }
+    // Coggan 7-level power zone model
+    { code: 'Z1', name: 'Recupero attivo', lo: 0, hi: 0.54 },
+    { code: 'Z2', name: 'Endurance', lo: 0.56, hi: 0.69 },
+    { code: 'Z3', name: 'Tempo', lo: 0.70, hi: 0.84 },
+    { code: 'Z4', name: 'Soglia lattacida', lo: 0.85, hi: 1.03 },
+    { code: 'Z5', name: 'VO₂max', lo: 1.05, hi: 1.20 },
+    { code: 'Z6', name: 'Capacità anaerobica', lo: 1.20, hi: 1.40 },
+    { code: 'Z7', name: 'Potenza neuromuscolare', lo: 1.40, hi: 999 }
 ];
-
-// Computes zone boundaries from threshold value and zone definitions
-// @param {number} value - Threshold value (LTHR in bpm or FTP in watts)
-// @param {Array} defs - Zone definitions array (HR_ZONE_DEFS or POWER_ZONE_DEFS)
-// @returns {Array|null} Array of lower bounds for each zone, with Infinity as final edge
-function computeZoneBounds(value, defs) {
-    if (!value) return null;
-    const edges = defs.map(def => Math.floor(value * def.lo));
-    edges.push(Infinity);
-    return edges;
-}
-
-function formatZoneRange(bounds, idx, unit) {
-    if (!bounds) return '';
-    const lo = bounds[idx];
-    const hi = bounds[idx + 1];
-    const u = unit || 'bpm';
-    if (idx === 0) return '0-' + hi + ' ' + u;
-    if (hi === Infinity) return '> ' + lo + ' ' + u;
-    return (lo + 1) + '-' + hi + ' ' + u;
-}
 
 function buildZoneSection(method, value) {
     const container = document.getElementById('zoneSection');
@@ -91,13 +70,20 @@ function buildZoneSection(method, value) {
         container.innerHTML = '<div class="zone-section"><div class="zone-header" style="cursor:default;color:#6C757D;"><i class="fa-solid ' + icon + '"></i> ' + label + ' <small style="font-weight:400;">— ' + hint + '</small></div></div>';
         return;
     }
-    const bounds = computeZoneBounds(value, defs);
     let html = '<div class="zone-section"><div class="zone-header" onclick="toggleZoneSection()"><i class="fa-solid ' + icon + '"></i> ' + label + ' <span class="zone-toggle">&#9654;</span></div><div class="zone-body hidden">';
     defs.forEach((def, idx) => {
+        const lo = Math.floor(value * def.lo);
+        const hi = Math.floor(value * def.hi);
+        const u = unit || 'bpm';
+        let range;
+        if (idx === 0) range = '0-' + hi + ' ' + u;
+        else if (hi >= 999 * value) range = '> ' + lo + ' ' + u;
+        else range = lo + '-' + hi + ' ' + u;
+        
         html += '<div class="zone-row" data-zone="' + def.code + '">' +
             '<span class="zone-badge">' + def.code + '</span>' +
             '<span class="zone-name">' + def.name + '</span>' +
-            '<span class="zone-range">' + formatZoneRange(bounds, idx, unit) + '</span>' +
+            '<span class="zone-range">' + range + '</span>' +
             '<input type="number" class="zone-h" min="0" step="1" placeholder="h">' +
             '<span class="zone-unit">h</span>' +
             '<input type="number" class="zone-m" min="0" max="59" step="1" placeholder="m">' +
