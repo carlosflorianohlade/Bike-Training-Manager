@@ -22,15 +22,32 @@ router.get('/profile', authenticateToken, async (req, res) => {
 router.put('/profile', authenticateToken, async (req, res) => {
     try {
         const { first_name, last_name, weight, height, lthr, ftp, zone_method, preferred_discipline } = req.body;
+        
+        // Validate required fields
+        if (!first_name || !first_name.trim()) {
+            return res.status(400).json({ success: false, message: 'Nome è obbligatorio' });
+        }
+        if (!last_name || !last_name.trim()) {
+            return res.status(400).json({ success: false, message: 'Cognome è obbligatorio' });
+        }
+        
         const validatedZoneMethod = (zone_method === 'ftp' || zone_method === 'lthr') ? zone_method : 'lthr';
         const validatedFtp = (ftp !== undefined && ftp !== '' && ftp !== null) ? parseInt(ftp) : null;
         const validatedLthr = (lthr !== undefined && lthr !== '' && lthr !== null) ? parseInt(lthr) : null;
         const validatedWeight = (weight !== undefined && weight !== '' && weight !== null) ? parseFloat(weight) : null;
         const validatedHeight = (height !== undefined && height !== '' && height !== null) ? parseFloat(height) : null;
+        const validatedFirstName = first_name.trim();
+        const validatedLastName = last_name.trim();
+        const validDisciplines = ['MTB', 'strada', 'gravel', 'indoor'];
+        const validatedDiscipline = validDisciplines.includes(preferred_discipline) ? preferred_discipline : 'MTB';
         
         await db.execute(
             'UPDATE users SET first_name = ?, last_name = ?, weight = ?, height = ?, lthr = ?, ftp = ?, zone_method = ?, preferred_discipline = ? WHERE id = ?',
-            [first_name, last_name, validatedWeight, validatedHeight, validatedLthr, validatedFtp, validatedZoneMethod, preferred_discipline || 'MTB', req.user.userId]
+            [validatedFirstName, validatedLastName, (weight !== undefined && weight !== '' && weight !== null) ? parseFloat(weight) : null, 
+             (height !== undefined && height !== '' && height !== null) ? parseFloat(height) : null,
+             (lthr !== undefined && lthr !== '' && lthr !== null) ? parseInt(lthr) : null,
+             (ftp !== undefined && ftp !== '' && ftp !== null) ? parseInt(ftp) : null,
+             validatedZoneMethod, validatedDiscipline, req.user.userId]
         );
         res.json({ success: true, message: 'Profilo aggiornato' });
     } catch (err) {
