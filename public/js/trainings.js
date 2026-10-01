@@ -59,22 +59,23 @@ const POWER_ZONE_DEFS = [
 
 // Computes zone boundaries from threshold value and zone definitions
 // @param {number} value - Threshold value (LTHR in bpm or FTP in watts)
+// @param {Array} defs - Zone definitions array (HR_ZONE_DEFS or POWER_ZONE_DEFS)
 // @returns {Array|null} Array of lower bounds for each zone, with Infinity as final edge
-function computeZoneBounds(value) {
+function computeZoneBounds(value, defs) {
     if (!value) return null;
-    const edges = POWER_ZONE_DEFS.map(def => Math.floor(value * def.lo));
+    const edges = defs.map(def => Math.floor(value * def.lo));
     edges.push(Infinity);
     return edges;
 }
 
-function formatZoneRange(value, idx, unit, def) {
-    if (!value) return '';
-    const lo = Math.floor(value * def.lo);
-    const hi = Math.floor(value * def.hi);
+function formatZoneRange(bounds, idx, unit) {
+    if (!bounds) return '';
+    const lo = bounds[idx];
+    const hi = bounds[idx + 1];
     const u = unit || 'bpm';
     if (idx === 0) return '0-' + hi + ' ' + u;
-    if (hi >= 999 * value || hi === Infinity) return '> ' + lo + ' ' + u;
-    return lo + '-' + hi + ' ' + u;
+    if (hi === Infinity) return '> ' + lo + ' ' + u;
+    return (lo + 1) + '-' + hi + ' ' + u;
 }
 
 function buildZoneSection(method, value) {
@@ -90,13 +91,13 @@ function buildZoneSection(method, value) {
         container.innerHTML = '<div class="zone-section"><div class="zone-header" style="cursor:default;color:#6C757D;"><i class="fa-solid ' + icon + '"></i> ' + label + ' <small style="font-weight:400;">— ' + hint + '</small></div></div>';
         return;
     }
-    const bounds = computeZoneBounds(value);
+    const bounds = computeZoneBounds(value, defs);
     let html = '<div class="zone-section"><div class="zone-header" onclick="toggleZoneSection()"><i class="fa-solid ' + icon + '"></i> ' + label + ' <span class="zone-toggle">&#9654;</span></div><div class="zone-body hidden">';
     defs.forEach((def, idx) => {
         html += '<div class="zone-row" data-zone="' + def.code + '">' +
             '<span class="zone-badge">' + def.code + '</span>' +
             '<span class="zone-name">' + def.name + '</span>' +
-            '<span class="zone-range">' + formatZoneRange(value, idx, unit, def) + '</span>' +
+            '<span class="zone-range">' + formatZoneRange(bounds, idx, unit) + '</span>' +
             '<input type="number" class="zone-h" min="0" step="1" placeholder="h">' +
             '<span class="zone-unit">h</span>' +
             '<input type="number" class="zone-m" min="0" max="59" step="1" placeholder="m">' +
