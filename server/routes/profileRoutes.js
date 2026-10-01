@@ -39,7 +39,17 @@ router.put('/profile', authenticateToken, async (req, res) => {
 
         await db.execute(
             'UPDATE users SET first_name = ?, last_name = ?, weight = ?, height = ?, lthr = ?, ftp = ?, zone_method = ?, preferred_discipline = ? WHERE id = ?',
-            [first_name, last_name, validatedWeight, validatedHeight, validatedLthr, validatedFtp, validatedZoneMethod, preferred_discipline || 'MTB', req.user.userId]
+            [
+                first_name, 
+                last_name, 
+                validatedWeight, 
+                validatedHeight, 
+                validatedZoneMethod === 'lthr' ? validatedLthr : null,
+                validatedZoneMethod === 'ftp' ? validatedFtp : null,
+                validatedZoneMethod, 
+                preferred_discipline || 'MTB', 
+                req.user.userId
+            ]
         );
         res.json({ success: true, message: 'Profilo aggiornato' });
     } catch (err) {
