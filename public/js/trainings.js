@@ -1,6 +1,7 @@
 let currentUser = null;
 let currentSort = 'training_date';
 let currentOrder = 'desc';
+let currentTrainingZoneMethod = null;
 
 function toInputDateValue(value) {
     const d = new Date(value);
@@ -124,10 +125,32 @@ function getZoneTimes() {
 
 function pickZoneTimes(t) {
     if (!t) return [];
-    if (t.zone_times && t.zone_times.length) return t.zone_times;
-    const method = (currentUser && currentUser.zone_method) || 'lthr';
-    if (method === 'ftp') return t.power_zone_times || [];
-    return t.hr_zone_times || [];
+    // Ogni allenamento usa il metodo con cui è stato registrato
+    const method = t.zone_method || (currentUser && currentUser.zone_method) || 'lthr';
+    if (method === 'ftp') return t.power_zone_times || t.zone_times || [];
+    return t.hr_zone_times || t.zone_times || [];
+}
+
+function thresholdForMethod(method) {
+    if (!currentUser) return null;
+    return method === 'ftp' ? currentUser.ftp : currentUser.lthr;
+}
+
+function setZoneLocked(locked, method) {
+    document.querySelectorAll('.zone-row input').forEach(el => { el.disabled = locked; });
+    let notice = document.getElementById('zoneLockedNotice');
+    if (locked) {
+        const label = method === 'ftp' ? 'FTP (potenza)' : 'LTHR (cuore)';
+        if (!notice) {
+            notice = document.createElement('div');
+            notice.id = 'zoneLockedNotice';
+            notice.className = 'zone-locked-notice';
+            document.getElementById('zoneSection').appendChild(notice);
+        }
+        notice.innerHTML = '<i class="fa-solid fa-lock"></i> Zone registrate con ' + label + ': passa a questo metodo nel profilo per modificarle.';
+    } else if (notice) {
+        notice.remove();
+    }
 }
 
 function setZoneTimes(zoneTimes) {
@@ -235,7 +258,9 @@ function openAddModal() {
     document.getElementById('trainingForm').reset();
     document.getElementById('tDate').value = new Date().toISOString().split('T')[0];
     document.getElementById('tType').value = currentUser.preferred_discipline || 'MTB';
+    currentTrainingZoneMethod = (currentUser && currentUser.zone_method) || 'lthr';
     refreshZoneSection();
+    setZoneLocked(false);
     document.getElementById('trainingModal').classList.remove('hidden');
 }
 
@@ -260,7 +285,8 @@ async function visualizeModal(id) {
         document.getElementById('tMaxHr').value = t.max_hr;
         document.getElementById('tCadence').value = t.cadence;
         document.getElementById('tNotes').value = t.notes;
-        refreshZoneSection();
+        currentTrainingZoneMethod = t.zone_method || (currentUser && currentUser.zone_method) || 'lthr';
+        buildZoneSection(currentTrainingZoneMethod, thresholdForMethod(currentTrainingZoneMethod));
         setZoneTimes(pickZoneTimes(t));
 
         setFormMode(false);
@@ -293,8 +319,11 @@ async function openEditModal(id) {
         document.getElementById('tMaxHr').value = t.max_hr;
         document.getElementById('tCadence').value = t.cadence;
         document.getElementById('tNotes').value = t.notes;
-        refreshZoneSection();
+        currentTrainingZoneMethod = t.zone_method || (currentUser && currentUser.zone_method) || 'lthr';
+        buildZoneSection(currentTrainingZoneMethod, thresholdForMethod(currentTrainingZoneMethod));
         setZoneTimes(pickZoneTimes(t));
+        const profileMethod = (currentUser && currentUser.zone_method) || 'lthr';
+        setZoneLocked(currentTrainingZoneMethod !== profileMethod, currentTrainingZoneMethod);
 
         document.getElementById('trainingModal').classList.remove('hidden');
     } catch (err) {
@@ -349,7 +378,9 @@ document.addEventListener('DOMContentLoaded', async function() {
             max_hr: parseInt(document.getElementById('tMaxHr').value) || null,
             cadence: parseInt(document.getElementById('tCadence').value) || null,
             notes: document.getElementById('tNotes').value || null,
-            zone_method: (currentUser && currentUser.zone_method) || 'lthr',
+            zone_method: document.getElementById('editId').value
+                ? (currentTrainingZoneMethod || (currentUser && currentUser.zone_method) || 'lthr')
+                : ((currentUser && currentUser.zone_method) || 'lthr'),
             zone_times: getZoneTimes()
         };
 

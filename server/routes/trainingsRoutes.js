@@ -40,6 +40,14 @@ router.get('/trainings', authenticateToken, async (req, res) => {
     }
 });
 
+const HR_ZONE_CODES = ['z1', 'z2', 'z3', 'z4', 'z5a', 'z5b', 'z5c'];
+const POWER_ZONE_CODES = ['Z1', 'Z2', 'Z3', 'Z4', 'Z5', 'Z6', 'Z7'];
+
+function filterZoneTimes(zone_times, zone_method) {
+    const allowed = zone_method === 'ftp' ? POWER_ZONE_CODES : HR_ZONE_CODES;
+    return (zone_times || []).filter(z => z && allowed.includes(z.zone_code));
+}
+
 router.post('/trainings', authenticateToken, async (req, res) => {
     try {
         const { title, training_date, type, distance, duration, elevation_gain, avg_speed, avg_hr, max_hr, cadence, notes, zone_times, hr_zone_times, power_zone_times } = req.body;
@@ -55,12 +63,12 @@ router.post('/trainings', authenticateToken, async (req, res) => {
             return res.status(400).json({ success: false, message: 'Tipo non valido'});
 
         const [result] = await db.execute(
-            `INSERT INTO trainings (user_id, title, training_date, type, distance, duration, elevation_gain, avg_speed, avg_hr, max_hr, cadence, notes) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
-            [req.user.userId, title, training_date, type, distance || null, duration || null, elevation_gain || null, avg_speed || null, avg_hr || null, max_hr || null, cadence || null, notes || null]
+            `INSERT INTO trainings (user_id, title, training_date, type, distance, duration, elevation_gain, avg_speed, avg_hr, max_hr, cadence, notes, zone_method) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+            [req.user.userId, title, training_date, type, distance || null, duration || null, elevation_gain || null, avg_speed || null, avg_hr || null, max_hr || null, cadence || null, notes || null, zone_method]
         );
         const trainingId = result.insertId;
-        const hrTimes = hr_zone_times || (zone_method === 'lthr' ? zone_times : null);
-        const powerTimes = power_zone_times || (zone_method === 'ftp' ? zone_times : null);
+        const hrTimes = filterZoneTimes(hr_zone_times || (zone_method === 'lthr' ? zone_times : null), 'lthr');
+        const powerTimes = filterZoneTimes(power_zone_times || (zone_method === 'ftp' ? zone_times : null), 'ftp');
         if (hrTimes && hrTimes.length > 0) {
             const values = hrTimes.map(z => [trainingId, z.zone_code, z.seconds || 0]);
             await db.query(
@@ -100,9 +108,8 @@ router.get('/trainings/:id', authenticateToken, async (req, res) => {
         const training = rows[0];
         training.hr_zone_times = hrZoneRows;
         training.power_zone_times = powerZoneRows;
-        const [userRows] = await db.execute('SELECT zone_method FROM users WHERE id = ?', [req.user.userId]);
-        const zone_method = (userRows[0] && userRows[0].zone_method) || 'lthr';
-        training.zone_times = zone_method === 'ftp' ? powerZoneRows : hrZoneRows;
+        const stored_method = training.zone_method || 'lthr';
+        training.zone_times = stored_method === 'ftp' ? powerZoneRows : hrZoneRows;
         res.json({ success: true, training });
     } catch (err) {
         console.error(err);
@@ -129,26 +136,41 @@ router.put('/trainings/:id', authenticateToken, async (req, res) => {
             [title, training_date, type, distance || null, duration || null, elevation_gain || null, avg_speed || null, avg_hr || null, max_hr || null, cadence || null, notes || null, req.params.id, req.user.userId]
         );
         if (result.affectedRows === 0) return res.status(404).json({ success: false, message: 'Allenamento non trovato' });
-        if (hr_zone_times !== undefined || (zone_method === 'lthr' && zone_times !== undefined)) {
-            const hrTimes = hr_zone_times !== undefined ? hr_zone_times : zone_times;
-            await db.execute('DELETE FROM training_hr_zone_times WHERE training_id = ?', [req.params.id]);
-            if (hrTimes && hrTimes.length > 0) {
-                const values = hrTimes.map(z => [req.params.id, z.zone_code, z.seconds || 0]);
-                await db.query(
-                    'INSERT INTO training_hr_zone_times (training_id, zone_code, seconds) VALUES ?',
-                    [values]
-                );
+        const [storedRows] = await db.execute(
+            'SELECT zone_method FROM trainings WHERE id = ? AND user_id = ?',
+            [req.params.id, req.user.userId]
+        );
+        const stored_method = (storedRows[0] && storedRows[0].zone_method) || 'lthr';
+        // Il metodo zone dell'allenamento è immutabile: le zone si aggiornano solo nella tabella originale
+        zone_method = stored_method;
+        const rawHr = hr_zone_times !== undefined ? hr_zone_times : (zone_method === 'lthr' ? zone_times : undefined);
+        if (rawHr !== undefined) {
+            const hrTimes = filterZoneTimes(rawHr, 'lthr');
+            // Se il payload contiene voci ma nessuna valida per questo metodo, preserva i dati esistenti
+            if (hrTimes.length > 0 || rawHr.length === 0) {
+                await db.execute('DELETE FROM training_hr_zone_times WHERE training_id = ?', [req.params.id]);
+                if (hrTimes.length > 0) {
+                    const values = hrTimes.map(z => [req.params.id, z.zone_code, z.seconds || 0]);
+                    await db.query(
+                        'INSERT INTO training_hr_zone_times (training_id, zone_code, seconds) VALUES ?',
+                        [values]
+                    );
+                }
             }
         }
-        if (power_zone_times !== undefined || (zone_method === 'ftp' && zone_times !== undefined)) {
-            const powerTimes = power_zone_times !== undefined ? power_zone_times : zone_times;
-            await db.execute('DELETE FROM training_power_zone_times WHERE training_id = ?', [req.params.id]);
-            if (powerTimes && powerTimes.length > 0) {
-                const values = powerTimes.map(z => [req.params.id, z.zone_code, z.seconds || 0]);
-                await db.query(
-                    'INSERT INTO training_power_zone_times (training_id, zone_code, seconds) VALUES ?',
-                    [values]
-                );
+        const rawPower = power_zone_times !== undefined ? power_zone_times : (zone_method === 'ftp' ? zone_times : undefined);
+        if (rawPower !== undefined) {
+            const powerTimes = filterZoneTimes(rawPower, 'ftp');
+            // Se il payload contiene voci ma nessuna valida per questo metodo, preserva i dati esistenti
+            if (powerTimes.length > 0 || rawPower.length === 0) {
+                await db.execute('DELETE FROM training_power_zone_times WHERE training_id = ?', [req.params.id]);
+                if (powerTimes.length > 0) {
+                    const values = powerTimes.map(z => [req.params.id, z.zone_code, z.seconds || 0]);
+                    await db.query(
+                        'INSERT INTO training_power_zone_times (training_id, zone_code, seconds) VALUES ?',
+                        [values]
+                    );
+                }
             }
         }
         res.json({ success: true, message: 'Allenamento aggiornato' });

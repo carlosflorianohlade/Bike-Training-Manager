@@ -30,6 +30,7 @@ CREATE TABLE trainings (
     max_hr INT,
     cadence INT,
     notes TEXT,
+    zone_method ENUM('lthr','ftp') DEFAULT 'lthr',
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
