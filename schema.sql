@@ -10,6 +10,8 @@ CREATE TABLE users (
     weight DECIMAL(4,1),
     height DECIMAL(4,1),
     lthr INT DEFAULT NULL,
+    ftp INT DEFAULT NULL,
+    zone_method ENUM('lthr','ftp') DEFAULT 'lthr',
     preferred_discipline ENUM('MTB','strada','gravel','indoor') DEFAULT 'MTB',
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
