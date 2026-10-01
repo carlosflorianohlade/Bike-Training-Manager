@@ -108,6 +108,14 @@ function buildZoneSection(method, value) {
     container.innerHTML = html;
 }
 
+async function refreshZoneSection() {
+    currentUser = await checkAuth();
+    if (!currentUser) return;
+    const method = currentUser.zone_method || 'lthr';
+    const value = method === 'ftp' ? currentUser.ftp : currentUser.lthr;
+    buildZoneSection(method, value);
+}
+
 function toggleZoneSection() {
     const body = document.querySelector('.zone-body');
     const toggle = document.querySelector('.zone-toggle');
@@ -232,7 +240,7 @@ function sortBy(field) {
     loadTrainings();
 }
 
-function openAddModal() {
+async function openAddModal() {
     document.body.style.overflow = 'hidden';
 
     document.getElementById('modalTitle').textContent = 'Nuovo allenamento';
@@ -241,7 +249,7 @@ function openAddModal() {
     document.getElementById('trainingForm').reset();
     document.getElementById('tDate').value = new Date().toISOString().split('T')[0];
     document.getElementById('tType').value = currentUser.preferred_discipline || 'MTB';
-    resetZoneFields();
+    await refreshZoneSection();
     document.getElementById('trainingModal').classList.remove('hidden');
 }
 
@@ -299,6 +307,7 @@ async function openEditModal(id) {
         document.getElementById('tCadence').value = t.cadence;
         document.getElementById('tNotes').value = t.notes;
         setZoneTimes(t.zone_times);
+        await refreshZoneSection();
 
         document.getElementById('trainingModal').classList.remove('hidden');
     } catch (err) {
