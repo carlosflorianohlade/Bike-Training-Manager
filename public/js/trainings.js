@@ -47,13 +47,13 @@ const HR_ZONE_DEFS = [
 ];
 
 const POWER_ZONE_DEFS = [
-    { code: 'z1', name: 'Recupero', lo: 0, hi: 0.55 },
-    { code: 'z2', name: 'Aerobico', lo: 0.56, hi: 0.75 },
-    { code: 'z3', name: 'Tempo', lo: 0.76, hi: 0.90 },
-    { code: 'z4', name: 'Sotto-soglia', lo: 0.91, hi: 1.05 },
-    { code: 'z5a', name: 'Sopra-soglia', lo: 1.06, hi: 1.20 },
-    { code: 'z5b', name: 'Capacità aerobica', lo: 1.21, hi: 1.50 },
-    { code: 'z5c', name: 'Capacità anaerobica', lo: 1.51, hi: 999 }
+    { code: 'z1', name: 'Recupero', lo: 0, hi: 0.54 },
+    { code: 'z2', name: 'Aerobico', lo: 0.56, hi: 0.69 },
+    { code: 'z3', name: 'Tempo', lo: 0.70, hi: 0.84 },
+    { code: 'z4', name: 'Sotto-soglia', lo: 0.85, hi: 1.03 },
+    { code: 'z5a', name: 'Sopra-soglia', lo: 1.05, hi: 1.20 },
+    { code: 'z5b', name: 'Capacità aerobica', lo: 1.20, hi: 1.40 },
+    { code: 'z5c', name: 'Capacità anaerobica', lo: 1.40, hi: 999 }
 ];
 
 function computeZoneBounds(value, method) {
@@ -71,7 +71,7 @@ function formatZoneRange(bounds, idx, unit) {
     const u = unit || 'bpm';
     if (idx === 0) return '0-' + hi + ' ' + u;
     if (hi === Infinity) return '> ' + lo + ' ' + u;
-    return lo + '-' + hi + ' ' + u;
+    return (lo + 1) + '-' + hi + ' ' + u;
 }
 
 function buildZoneSection(method, value) {
@@ -87,7 +87,7 @@ function buildZoneSection(method, value) {
         container.innerHTML = '<div class="zone-section"><div class="zone-header" style="cursor:default;color:#6C757D;"><i class="fa-solid ' + icon + '"></i> ' + label + ' <small style="font-weight:400;">— ' + hint + '</small></div></div>';
         return;
     }
-    const bounds = computeZoneBounds(value, defs);
+    const bounds = computeZoneBounds(value, method);
     let html = '<div class="zone-section"><div class="zone-header" onclick="toggleZoneSection()"><i class="fa-solid ' + icon + '"></i> ' + label + ' <span class="zone-toggle">&#9654;</span></div><div class="zone-body hidden">';
     defs.forEach((def, idx) => {
         html += '<div class="zone-row" data-zone="' + def.code + '">' +

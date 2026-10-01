@@ -18,7 +18,7 @@ document.addEventListener('DOMContentLoaded', async function() {
     document.getElementById('pZoneMethod').value = currentUser.zone_method || 'lthr';
     document.getElementById('pDiscipline').value = currentUser.preferred_discipline || 'MTB';
 
-document.getElementById('profileForm').addEventListener('submit', async function(e) {
+    document.getElementById('profileForm').addEventListener('submit', async function(e) {
         e.preventDefault();
         const ftpValue = document.getElementById('pFtp').value;
         const zoneMethod = document.getElementById('pZoneMethod').value;
