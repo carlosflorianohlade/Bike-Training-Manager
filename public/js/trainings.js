@@ -36,7 +36,7 @@ function setDurationFields(minutes) {
     document.getElementById('tDurationMinutes').value = total % 60;
 }
 
-const ZONE_DEFS = [
+const HR_ZONE_DEFS = [
     { code: 'z1', name: 'Recupero', lo: 0, hi: 0.82 },
     { code: 'z2', name: 'Aerobico', lo: 0.82, hi: 0.89 },
     { code: 'z3', name: 'Tempo', lo: 0.89, hi: 0.94 },
@@ -46,35 +46,53 @@ const ZONE_DEFS = [
     { code: 'z5c', name: 'Capacità anaerobica', lo: 1.06, hi: 999 }
 ];
 
-function computeZoneBounds(lthr) {
-    if (!lthr) return null;
-    const endges = ZONE_DEFS.map(def => Math.floor(lthr * def.lo));
-    endges.push(Infinity);
-    return endges;
+const POWER_ZONE_DEFS = [
+    { code: 'z1', name: 'Recupero', lo: 0, hi: 0.54 },
+    { code: 'z2', name: 'Aerobico', lo: 0.56, hi: 0.69 },
+    { code: 'z3', name: 'Tempo', lo: 0.70, hi: 0.84 },
+    { code: 'z4', name: 'Sotto-soglia', lo: 0.85, hi: 1.03 },
+    { code: 'z5a', name: 'Sopra-soglia', lo: 1.05, hi: 1.20 },
+    { code: 'z5b', name: 'Capacità aerobica', lo: 1.20, hi: 1.40 },
+    { code: 'z5c', name: 'Capacità anaerobica', lo: 1.40, hi: 999 }
+];
+
+function computeZoneBounds(value, defs) {
+    if (!value) return null;
+    const edges = defs.map(def => Math.floor(value * def.lo));
+    edges.push(Infinity);
+    return edges;
 }
 
-function formatZoneRange(bounds, idx) {
+function formatZoneRange(bounds, idx, unit) {
     if (!bounds) return '';
     const lo = bounds[idx];
     const hi = bounds[idx + 1];
-    if (idx === 0) return '0-' + hi + ' bpm';
-    if (hi === Infinity) return '> ' + lo + ' bpm';
-    return (lo + 1) + '-' + hi + ' bpm';
+    const u = unit || 'bpm';
+    if (idx === 0) return '0-' + hi + ' ' + u;
+    if (hi === Infinity) return '> ' + lo + ' ' + u;
+    return (lo + 1) + '-' + hi + ' ' + u;
 }
 
-function buildZoneSection(lthr) {
+function buildZoneSection(method, value) {
     const container = document.getElementById('zoneSection');
-    if (!lthr) {
-        container.innerHTML = '<div class="zone-section"><div class="zone-header" style="cursor:default;color:#6C757D;"><i class="fa-solid fa-heart-pulse"></i> Zone cardiache <small style="font-weight:400;">— imposta LTHR nel profilo</small></div></div>';
+    const isFTP = method === 'ftp';
+    const defs = isFTP ? POWER_ZONE_DEFS : HR_ZONE_DEFS;
+    const unit = isFTP ? 'W' : 'bpm';
+    const hint = isFTP ? 'imposta FTP nel profilo' : 'imposta LTHR nel profilo';
+    const icon = isFTP ? 'fa-bolt' : 'fa-heart-pulse';
+    const label = isFTP ? 'Zone di potenza' : 'Zone cardiache';
+
+    if (!value) {
+        container.innerHTML = '<div class="zone-section"><div class="zone-header" style="cursor:default;color:#6C757D;"><i class="fa-solid ' + icon + '"></i> ' + label + ' <small style="font-weight:400;">— ' + hint + '</small></div></div>';
         return;
     }
-    const bounds = computeZoneBounds(lthr);
-    let html = '<div class="zone-section"><div class="zone-header" onclick="toggleZoneSection()"><i class="fa-solid fa-heart-pulse"></i> Zone cardiache <span class="zone-toggle">&#9654;</span></div><div class="zone-body hidden">';
-    ZONE_DEFS.forEach((def, idx) => {
+    const bounds = computeZoneBounds(value, defs);
+    let html = '<div class="zone-section"><div class="zone-header" onclick="toggleZoneSection()"><i class="fa-solid ' + icon + '"></i> ' + label + ' <span class="zone-toggle">&#9654;</span></div><div class="zone-body hidden">';
+    defs.forEach((def, idx) => {
         html += '<div class="zone-row" data-zone="' + def.code + '">' +
             '<span class="zone-badge">' + def.code + '</span>' +
             '<span class="zone-name">' + def.name + '</span>' +
-            '<span class="zone-range">' + formatZoneRange(bounds, idx) + '</span>' +
+            '<span class="zone-range">' + formatZoneRange(bounds, idx, unit) + '</span>' +
             '<input type="number" class="zone-h" min="0" step="1" placeholder="h">' +
             '<span class="zone-unit">h</span>' +
             '<input type="number" class="zone-m" min="0" max="59" step="1" placeholder="m">' +
@@ -310,7 +328,9 @@ document.addEventListener('DOMContentLoaded', async function() {
     document.getElementById('tDate').value = new Date().toISOString().split('T')[0];
     await loadTrainings();
 
-    buildZoneSection(currentUser.lthr);
+    const method = currentUser.zone_method || 'lthr';
+    const value = method === 'ftp' ? currentUser.ftp : currentUser.lthr;
+    buildZoneSection(method, value);
 
     document.getElementById('tDistance').addEventListener('input', calculateAvgSpeed);
     document.getElementById('tDurationHours').addEventListener('input', calculateAvgSpeed);
