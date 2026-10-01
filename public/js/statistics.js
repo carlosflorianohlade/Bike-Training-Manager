@@ -80,7 +80,7 @@ function drawZoneTable(zones) {
 
     const hasData = zoneCodes.some(code => zoneMap[code] > 0);
     if (!hasData) {
-        document.getElementById('zoneChart').innerHTML = '<div class="empty-state"><p>Nessun dato per le zone cardiache questo mese.</p></div>';
+        document.getElementById('zoneChart').innerHTML = '<div class="empty-state"><p>Nessun dato per le zone questo mese.</p></div>';
         return;
     }
 
