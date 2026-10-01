@@ -56,9 +56,8 @@ const POWER_ZONE_DEFS = [
     { code: 'z5c', name: 'Capacità anaerobica', lo: 1.40, hi: 999 }
 ];
 
-function computeZoneBounds(value, method) {
+function computeZoneBounds(value, defs) {
     if (!value) return null;
-    const defs = method === 'ftp' ? POWER_ZONE_DEFS : HR_ZONE_DEFS;
     const edges = defs.map(def => Math.floor(value * def.lo));
     edges.push(Infinity);
     return edges;
@@ -74,10 +73,9 @@ function formatZoneRange(bounds, idx, unit) {
     return (lo + 1) + '-' + hi + ' ' + u;
 }
 
-function buildZoneSection(method, value) {
+function buildZoneSection(method, value, defs) {
     const container = document.getElementById('zoneSection');
     const isFTP = method === 'ftp';
-    const defs = isFTP ? POWER_ZONE_DEFS : HR_ZONE_DEFS;
     const unit = isFTP ? 'W' : 'bpm';
     const hint = isFTP ? 'imposta FTP nel profilo' : 'imposta LTHR nel profilo';
     const icon = isFTP ? 'fa-bolt' : 'fa-heart-pulse';
@@ -87,7 +85,7 @@ function buildZoneSection(method, value) {
         container.innerHTML = '<div class="zone-section"><div class="zone-header" style="cursor:default;color:#6C757D;"><i class="fa-solid ' + icon + '"></i> ' + label + ' <small style="font-weight:400;">— ' + hint + '</small></div></div>';
         return;
     }
-    const bounds = computeZoneBounds(value, method);
+    const bounds = computeZoneBounds(value, defs);
     let html = '<div class="zone-section"><div class="zone-header" onclick="toggleZoneSection()"><i class="fa-solid ' + icon + '"></i> ' + label + ' <span class="zone-toggle">&#9654;</span></div><div class="zone-body hidden">';
     defs.forEach((def, idx) => {
         html += '<div class="zone-row" data-zone="' + def.code + '">' +
@@ -109,8 +107,9 @@ function buildZoneSection(method, value) {
 function refreshZoneSection() {
     if (!currentUser) return;
     const method = currentUser.zone_method || 'lthr';
+    const defs = method === 'ftp' ? POWER_ZONE_DEFS : HR_ZONE_DEFS;
     const value = method === 'ftp' ? currentUser.ftp : currentUser.lthr;
-    buildZoneSection(method, value);
+    buildZoneSection(method, value, defs);
 }
 
 function toggleZoneSection() {
@@ -330,8 +329,9 @@ document.addEventListener('DOMContentLoaded', async function() {
     await loadTrainings();
 
     const method = currentUser.zone_method || 'lthr';
+    const defs = method === 'ftp' ? POWER_ZONE_DEFS : HR_ZONE_DEFS;
     const value = method === 'ftp' ? currentUser.ftp : currentUser.lthr;
-    buildZoneSection(method, value);
+    buildZoneSection(method, value, defs);
 
     document.getElementById('tDistance').addEventListener('input', calculateAvgSpeed);
     document.getElementById('tDurationHours').addEventListener('input', calculateAvgSpeed);
