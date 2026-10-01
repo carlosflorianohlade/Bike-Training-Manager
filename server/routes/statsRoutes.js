@@ -49,18 +49,25 @@ router.get('/stats/zones', authenticateToken, async (req, res) => {
     try {
         const year = parseInt(req.query.year) || new Date().getFullYear();
         const month = parseInt(req.query.month) || (new Date().getMonth() + 1);
+        const [userRows] = await db.execute('SELECT zone_method FROM users WHERE id = ?', [req.user.userId]);
+        const zone_method = (userRows[0] && userRows[0].zone_method) || 'lthr';
+        const isFTP = zone_method === 'ftp';
+        const table = isFTP ? 'training_power_zone_times' : 'training_hr_zone_times';
+        const order = isFTP
+            ? `FIELD(tz.zone_code, 'Z1','Z2','Z3','Z4','Z5','Z6','Z7')`
+            : `FIELD(tz.zone_code, 'z1','z2','z3','z4','z5a','z5b','z5c')`;
         const [rows] = await db.execute(
             `SELECT
                 tz.zone_code,
                 COALESCE(SUM(tz.seconds), 0) AS total_seconds
-             FROM training_zone_times tz
+             FROM ${table} tz
              JOIN trainings t ON tz.training_id = t.id
              WHERE t.user_id = ? AND YEAR(t.training_date) = ? AND MONTH(t.training_date) = ?
              GROUP BY tz.zone_code
-             ORDER BY FIELD(tz.zone_code, 'z1','z2','z3','z4','z5a','z5b','z5c')`,
+             ORDER BY ${order}`,
             [req.user.userId, year, month]
         );
-        res.json({ success: true, zones: rows });
+        res.json({ success: true, zones: rows, zone_method });
     } catch (err) {
         console.error('GET /api/stats/zones -', err.message);
         res.status(500).json({ success: false, message: 'Errore del server' });

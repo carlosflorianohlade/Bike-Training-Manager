@@ -35,7 +35,16 @@ CREATE TABLE trainings (
     FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
 );
 
-CREATE TABLE training_zone_times (
+CREATE TABLE training_hr_zone_times (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    training_id INT NOT NULL,
+    zone_code VARCHAR(5) NOT NULL,
+    seconds INT NOT NULL DEFAULT 0,
+    FOREIGN KEY (training_id) REFERENCES trainings(id) ON DELETE CASCADE,
+    UNIQUE KEY (training_id, zone_code)
+);
+
+CREATE TABLE training_power_zone_times (
     id INT AUTO_INCREMENT PRIMARY KEY,
     training_id INT NOT NULL,
     zone_code VARCHAR(5) NOT NULL,

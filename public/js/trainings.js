@@ -122,6 +122,14 @@ function getZoneTimes() {
     }).filter(z => z.seconds > 0);
 }
 
+function pickZoneTimes(t) {
+    if (!t) return [];
+    if (t.zone_times && t.zone_times.length) return t.zone_times;
+    const method = (currentUser && currentUser.zone_method) || 'lthr';
+    if (method === 'ftp') return t.power_zone_times || [];
+    return t.hr_zone_times || [];
+}
+
 function setZoneTimes(zoneTimes) {
     const rows = document.querySelectorAll('.zone-row');
     if (!rows.length) return;
@@ -252,8 +260,8 @@ async function visualizeModal(id) {
         document.getElementById('tMaxHr').value = t.max_hr;
         document.getElementById('tCadence').value = t.cadence;
         document.getElementById('tNotes').value = t.notes;
-        setZoneTimes(t.zone_times);
         refreshZoneSection();
+        setZoneTimes(pickZoneTimes(t));
 
         setFormMode(false);
         document.getElementById('trainingModal').classList.remove('hidden');
@@ -285,8 +293,8 @@ async function openEditModal(id) {
         document.getElementById('tMaxHr').value = t.max_hr;
         document.getElementById('tCadence').value = t.cadence;
         document.getElementById('tNotes').value = t.notes;
-        setZoneTimes(t.zone_times);
         refreshZoneSection();
+        setZoneTimes(pickZoneTimes(t));
 
         document.getElementById('trainingModal').classList.remove('hidden');
     } catch (err) {
@@ -341,6 +349,7 @@ document.addEventListener('DOMContentLoaded', async function() {
             max_hr: parseInt(document.getElementById('tMaxHr').value) || null,
             cadence: parseInt(document.getElementById('tCadence').value) || null,
             notes: document.getElementById('tNotes').value || null,
+            zone_method: (currentUser && currentUser.zone_method) || 'lthr',
             zone_times: getZoneTimes()
         };
 
