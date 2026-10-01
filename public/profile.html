@@ -72,6 +72,20 @@
                                 placeholder="Frequenza cardiaca di soglia">
                         </div>
                         <div class="form-group">
+                            <label for="pFtp"><i class="fa-solid fa-bolt"></i> FTP (W)</label>
+                            <input type="number" id="pFtp" class="form-control" min="0" max="1200"
+                                placeholder="Potenza di soglia">
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="pZoneMethod"><i class="fa-solid fa-gauge"></i> Riferimento per le zone</label>
+                            <select id="pZoneMethod" class="form-control">
+                                <option value="lthr">LTHR (bpm)</option>
+                                <option value="ftp">FTP (W)</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
                             <label for="pDiscipline"><i class="fa-solid fa-person-biking"></i> Disciplina
                                 preferita</label>
                             <select id="pDiscipline" class="form-control">
