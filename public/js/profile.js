@@ -40,6 +40,7 @@ document.addEventListener('DOMContentLoaded', async function() {
             const result = await res.json();
             if (result.success) {
                 showProfileAlert('Profilo aggiornato con successo!', 'success');
+                setTimeout(() => window.location.reload(), 1000);
             } else {
                 showProfileAlert(result.message || 'Errore durante il salvataggio', 'error');
             }
