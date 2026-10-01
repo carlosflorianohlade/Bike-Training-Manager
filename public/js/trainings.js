@@ -37,31 +37,28 @@ function setDurationFields(minutes) {
 }
 
 const HR_ZONE_DEFS = [
-    { code: 'z1', name: 'Recupero', hi: 0.82 },
-    { code: 'z2', name: 'Aerobico', hi: 0.89 },
-    { code: 'z3', name: 'Tempo', hi: 0.94 },
-    { code: 'z4', name: 'Sotto-soglia', hi: 1.0 },
-    { code: 'z5a', name: 'Sopra-soglia', hi: 1.03 },
-    { code: 'z5b', name: 'Capacità aerobica', hi: 1.06 },
-    { code: 'z5c', name: 'Capacità anaerobica', hi: 999 }
+    { code: 'z1', name: 'Recupero', lo: 0, hi: 0.82 },
+    { code: 'z2', name: 'Aerobico', lo: 0.82, hi: 0.89 },
+    { code: 'z3', name: 'Tempo', lo: 0.89, hi: 0.94 },
+    { code: 'z4', name: 'Sotto-soglia', lo: 0.94, hi: 1.0 },
+    { code: 'z5a', name: 'Sopra-soglia', lo: 1.0, hi: 1.03 },
+    { code: 'z5b', name: 'Capacità aerobica', lo: 1.03, hi: 1.06 },
+    { code: 'z5c', name: 'Capacità anaerobica', lo: 1.06, hi: 999 }
 ];
 
 const POWER_ZONE_DEFS = [
-    { code: 'z1', name: 'Recupero', hi: 0.54 },
-    { code: 'z2', name: 'Aerobico', hi: 0.69 },
-    { code: 'z3', name: 'Tempo', hi: 0.84 },
-    { code: 'z4', name: 'Sotto-soglia', hi: 1.03 },
-    { code: 'z5a', name: 'Sopra-soglia', hi: 1.20 },
-    { code: 'z5b', name: 'Capacità aerobica', hi: 1.40 },
-    { code: 'z5c', name: 'Capacità anaerobica', hi: 999 }
+    { code: 'z1', name: 'Recupero', lo: 0, hi: 0.54 },
+    { code: 'z2', name: 'Aerobico', lo: 0.56, hi: 0.69 },
+    { code: 'z3', name: 'Tempo', lo: 0.70, hi: 0.84 },
+    { code: 'z4', name: 'Sotto-soglia', lo: 0.85, hi: 1.03 },
+    { code: 'z5a', name: 'Sopra-soglia', lo: 1.05, hi: 1.20 },
+    { code: 'z5b', name: 'Capacità aerobica', lo: 1.20, hi: 1.40 },
+    { code: 'z5c', name: 'Capacità anaerobica', lo: 1.40, hi: 999 }
 ];
 
 function computeZoneBounds(value, defs) {
     if (!value) return null;
-    const edges = [0];
-    for (let i = 0; i < defs.length - 1; i++) {
-        edges.push(Math.floor(value * defs[i].hi));
-    }
+    const edges = defs.map(def => Math.floor(value * def.lo));
     edges.push(Infinity);
     return edges;
 }
@@ -239,7 +236,7 @@ function sortBy(field) {
     loadTrainings();
 }
 
-async function openAddModal() {
+function openAddModal() {
     document.body.style.overflow = 'hidden';
 
     document.getElementById('modalTitle').textContent = 'Nuovo allenamento';
