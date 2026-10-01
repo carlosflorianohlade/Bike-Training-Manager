@@ -59,9 +59,9 @@ const POWER_ZONE_DEFS = [
 
 // Computes zone boundaries from threshold value and zone definitions
 // @param {number} value - Threshold value (LTHR in bpm or FTP in watts)
-// @param {Array} defs - Zone definitions array (HR_ZONE_DEFS or POWER_ZONE_DEFS)
+// @param {Array} defs - Zone definitions array (HR_ZONE_DEFS or POWER_ZONE_DEFS); defaults to HR_ZONE_DEFS for backward compatibility
 // @returns {Array|null} Array of lower bounds for each zone, with Infinity as final edge
-function computeZoneBounds(value, defs) {
+function computeZoneBounds(value, defs = HR_ZONE_DEFS) {
     if (!value) return null;
     const edges = defs.map(def => Math.floor(value * def.lo));
     edges.push(Infinity);
@@ -75,7 +75,8 @@ function formatZoneRange(bounds, idx, unit) {
     const u = unit || 'bpm';
     if (idx === 0) return '0-' + hi + ' ' + u;
     if (hi === Infinity) return '> ' + lo + ' ' + u;
-    return (lo + 1) + '-' + hi + ' ' + u;
+    const step = unit === 'W' ? 0 : 1;
+    return (lo + step) + '-' + hi + ' ' + u;
 }
 
 function buildZoneSection(method, value) {

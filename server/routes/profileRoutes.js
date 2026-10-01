@@ -33,7 +33,13 @@ router.put('/profile', authenticateToken, async (req, res) => {
         
         const validatedZoneMethod = (zone_method === 'ftp' || zone_method === 'lthr') ? zone_method : 'lthr';
         const validatedFtp = (ftp !== undefined && ftp !== '' && ftp !== null) ? parseInt(ftp) : null;
+        if (validatedFtp !== null && (validatedFtp < 0 || validatedFtp > 1200)) {
+            return res.status(400).json({ success: false, message: 'FTP deve essere compreso tra 0 e 1200 W' });
+        }
         const validatedLthr = (lthr !== undefined && lthr !== '' && lthr !== null) ? parseInt(lthr) : null;
+        if (validatedLthr !== null && (validatedLthr < 0 || validatedLthr > 210)) {
+            return res.status(400).json({ success: false, message: 'LTHR deve essere compreso tra 0 e 210 bpm' });
+        }
         const validatedWeight = (weight !== undefined && weight !== '' && weight !== null) ? parseFloat(weight) : null;
         const validatedHeight = (height !== undefined && height !== '' && height !== null) ? parseFloat(height) : null;
         const validatedFirstName = first_name.trim();
