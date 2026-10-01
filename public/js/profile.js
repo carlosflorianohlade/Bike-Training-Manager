@@ -20,6 +20,12 @@ document.addEventListener('DOMContentLoaded', async function() {
 
     document.getElementById('profileForm').addEventListener('submit', async function(e) {
         e.preventDefault();
+        const ftpValue = document.getElementById('pFtp').value;
+        const zoneMethod = document.getElementById('pZoneMethod').value;
+        if (zoneMethod === 'ftp' && (!ftpValue || ftpValue.trim() === '')) {
+            showProfileAlert('FTP è obbligatorio quando il metodo di zona è FTP', 'error');
+            return;
+        }
         const data = {
             first_name: document.getElementById('pFirstName').value,
             last_name: document.getElementById('pLastName').value,

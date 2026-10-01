@@ -23,9 +23,19 @@ router.put('/profile', authenticateToken, async (req, res) => {
     try {
         const { first_name, last_name, weight, height, lthr, ftp, zone_method, preferred_discipline } = req.body;
         const validatedZoneMethod = (zone_method === 'ftp' || zone_method === 'lthr') ? zone_method : 'lthr';
+        const validatedFtp = (ftp !== undefined && ftp !== '' && ftp !== null) ? parseInt(ftp) : null;
+        const validatedLthr = (lthr !== undefined && lthr !== '' && lthr !== null) ? parseInt(lthr) : null;
+        const validatedWeight = (weight !== undefined && weight !== '' && weight !== null) ? parseFloat(weight) : null;
+        const validatedHeight = (height !== undefined && height !== '' && height !== null) ? parseFloat(height) : null;
+
+        // Validate that FTP is provided when zone_method is ftp
+        if (validatedZoneMethod === 'ftp' && !validatedFtp) {
+            return res.status(400).json({ success: false, message: 'FTP è obbligatorio quando il metodo di zona è FTP' });
+        }
+
         await db.execute(
             'UPDATE users SET first_name = ?, last_name = ?, weight = ?, height = ?, lthr = ?, ftp = ?, zone_method = ?, preferred_discipline = ? WHERE id = ?',
-            [first_name, last_name, weight || null, height || null, lthr || null, parseInt(ftp) || null, validatedZoneMethod, preferred_discipline || 'MTB', req.user.userId]
+            [first_name, last_name, validatedWeight, validatedHeight, validatedLthr, validatedFtp, validatedZoneMethod, preferred_discipline || 'MTB', req.user.userId]
         );
         res.json({ success: true, message: 'Profilo aggiornato' });
     } catch (err) {

@@ -37,32 +37,32 @@ function setDurationFields(minutes) {
 }
 
 const HR_ZONE_DEFS = [
-    { code: 'z1', name: 'Recupero', lo: 0, hi: 0.82 },
-    { code: 'z2', name: 'Aerobico', lo: 0.82, hi: 0.89 },
-    { code: 'z3', name: 'Tempo', lo: 0.89, hi: 0.94 },
-    { code: 'z4', name: 'Sotto-soglia', lo: 0.94, hi: 1.0 },
-    { code: 'z5a', name: 'Sopra-soglia', lo: 1.0, hi: 1.03 },
-    { code: 'z5b', name: 'Capacità aerobica', lo: 1.03, hi: 1.06 },
-    { code: 'z5c', name: 'Capacità anaerobica', lo: 1.06, hi: 999 }
+    { code: 'z1', name: 'Recupero', hi: 0.82 },
+    { code: 'z2', name: 'Aerobico', hi: 0.89 },
+    { code: 'z3', name: 'Tempo', hi: 0.94 },
+    { code: 'z4', name: 'Sotto-soglia', hi: 1.0 },
+    { code: 'z5a', name: 'Sopra-soglia', hi: 1.03 },
+    { code: 'z5b', name: 'Capacità aerobica', hi: 1.06 },
+    { code: 'z5c', name: 'Capacità anaerobica', hi: 999 }
 ];
 
 const POWER_ZONE_DEFS = [
-    { code: 'z1', name: 'Recupero', lo: 0, hi: 0.54 },
-    { code: 'z2', name: 'Aerobico', lo: 0.56, hi: 0.69 },
-    { code: 'z3', name: 'Tempo', lo: 0.70, hi: 0.84 },
-    { code: 'z4', name: 'Sotto-soglia', lo: 0.85, hi: 1.03 },
-    { code: 'z5a', name: 'Sopra-soglia', lo: 1.05, hi: 1.20 },
-    { code: 'z5b', name: 'Capacità aerobica', lo: 1.20, hi: 1.40 },
-    { code: 'z5c', name: 'Capacità anaerobica', lo: 1.40, hi: 999 }
+    { code: 'z1', name: 'Recupero', hi: 0.54 },
+    { code: 'z2', name: 'Aerobico', hi: 0.69 },
+    { code: 'z3', name: 'Tempo', hi: 0.84 },
+    { code: 'z4', name: 'Sotto-soglia', hi: 1.03 },
+    { code: 'z5a', name: 'Sopra-soglia', hi: 1.20 },
+    { code: 'z5b', name: 'Capacità aerobica', hi: 1.40 },
+    { code: 'z5c', name: 'Capacità anaerobica', hi: 999 }
 ];
 
 function computeZoneBounds(value, defs) {
     if (!value) return null;
     const edges = [0];
-    for (const def of defs) {
-        edges.push(Math.floor(value * def.hi));
+    for (let i = 0; i < defs.length - 1; i++) {
+        edges.push(Math.floor(value * defs[i].hi));
     }
-    edges[edges.length - 1] = Infinity;
+    edges.push(Infinity);
     return edges;
 }
 
@@ -108,8 +108,7 @@ function buildZoneSection(method, value) {
     container.innerHTML = html;
 }
 
-async function refreshZoneSection() {
-    currentUser = await checkAuth();
+function refreshZoneSection() {
     if (!currentUser) return;
     const method = currentUser.zone_method || 'lthr';
     const value = method === 'ftp' ? currentUser.ftp : currentUser.lthr;
@@ -249,7 +248,7 @@ async function openAddModal() {
     document.getElementById('trainingForm').reset();
     document.getElementById('tDate').value = new Date().toISOString().split('T')[0];
     document.getElementById('tType').value = currentUser.preferred_discipline || 'MTB';
-    await refreshZoneSection();
+    refreshZoneSection();
     document.getElementById('trainingModal').classList.remove('hidden');
 }
 
@@ -275,7 +274,7 @@ async function visualizeModal(id) {
         document.getElementById('tCadence').value = t.cadence;
         document.getElementById('tNotes').value = t.notes;
         setZoneTimes(t.zone_times);
-        await refreshZoneSection();
+        refreshZoneSection();
 
         setFormMode(false);
         document.getElementById('trainingModal').classList.remove('hidden');
@@ -308,7 +307,7 @@ async function openEditModal(id) {
         document.getElementById('tCadence').value = t.cadence;
         document.getElementById('tNotes').value = t.notes;
         setZoneTimes(t.zone_times);
-        await refreshZoneSection();
+        refreshZoneSection();
 
         document.getElementById('trainingModal').classList.remove('hidden');
     } catch (err) {
