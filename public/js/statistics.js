@@ -35,7 +35,17 @@ async function loadCharts() {
 
         google.charts.load('current', { packages: ['corechart'] });
         google.charts.setOnLoadCallback(function() {
-            if (zoneData.success) drawZoneTable(zoneData.zones);
+            if (zoneData.success) {
+                if (zoneData.hr_zones !== undefined || zoneData.power_zones !== undefined) {
+                    drawZoneTable(zoneData.hr_zones || [], 'hr');
+                    drawZoneTable(zoneData.power_zones || [], 'ftp');
+                } else {
+                    // Compatibilità con risposte precedenti (singolo array zone)
+                    drawZoneTable(zoneData.zones || [], (zoneData.zones || []).some(z => String(z.zone_code).startsWith('Z')) ? 'ftp' : 'hr');
+                    const other = document.getElementById((zoneData.zones || []).some(z => String(z.zone_code).startsWith('Z')) ? 'zoneChartHr' : 'zoneChartPower');
+                    if (other) other.innerHTML = '';
+                }
+            }
             drawTypeChart();
         });
     } catch (err) {
@@ -70,23 +80,27 @@ function drawTrainingCalendar(daily, year, month) {
     document.getElementById('trainingCalendar').innerHTML = html;
 }
 
-function drawZoneTable(zones) {
-    // Detecta se sono zone potenza (Z1-Z7) o cuore (z1-z5c)
-    const hasPowerZones = zones.some(z => z.zone_code.startsWith('Z'));
-    const zoneCodes = hasPowerZones 
+function drawZoneTable(zones, method) {
+    // Ogni allenamento contribuisce con le proprie zone: HR (z1-z5c) o potenza (Z1-Z7).
+    // Le due sezioni sono indipendenti dal metodo selezionato nel profilo.
+    const isFTP = method === 'ftp';
+    const containerId = isFTP ? 'zoneChartPower' : 'zoneChartHr';
+    const container = document.getElementById(containerId);
+    if (!container) return;
+    const zoneCodes = isFTP
         ? ['Z1', 'Z2', 'Z3', 'Z4', 'Z5', 'Z6', 'Z7']
         : ['z1', 'z2', 'z3', 'z4', 'z5a', 'z5b', 'z5c'];
-    const zoneLabels = hasPowerZones
+    const zoneLabels = isFTP
         ? { Z1: 'Z1 Recupero attivo', Z2: 'Z2 Endurance', Z3: 'Z3 Tempo', Z4: 'Z4 Soglia lattacida', Z5: 'Z5 VO₂max', Z6: 'Z6 Cap. anaerobica', Z7: 'Z7 Potenza neuromuscolare' }
         : { z1: 'Z1 Recupero', z2: 'Z2 Aerobico', z3: 'Z3 Tempo', z4: 'Z4 Sotto-soglia', z5a: 'Z5a Sopra-soglia', z5b: 'Z5b Cap. aerobica', z5c: 'Z5c Cap. anaerobica' };
     const zoneColors = ['#95D5B2', '#52B788', '#2D6A4F', '#FFD166', '#F4A261', '#E76F51', '#D90429'];
 
     const zoneMap = {};
-    zones.forEach(z => { zoneMap[z.zone_code] = Number(z.total_seconds); });
+    (zones || []).forEach(z => { zoneMap[z.zone_code] = Number(z.total_seconds); });
 
     const hasData = zoneCodes.some(code => zoneMap[code] > 0);
     if (!hasData) {
-        document.getElementById('zoneChart').innerHTML = '<div class="empty-state"><p>Nessun dato per le zone questo mese.</p></div>';
+        container.innerHTML = '<div class="empty-state"><p>' + (isFTP ? 'Nessun dato per le zone di potenza questo mese.' : 'Nessun dato per le zone cardiache questo mese.') + '</p></div>';
         return;
     }
 
@@ -109,7 +123,7 @@ function drawZoneTable(zones) {
     });
 
     html += '</div>';
-    document.getElementById('zoneChart').innerHTML = html;
+    container.innerHTML = html;
 }
 
 async function drawTypeChart() {
