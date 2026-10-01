@@ -56,7 +56,7 @@ const POWER_ZONE_DEFS = [
     { code: 'z5c', name: 'Capacità anaerobica', lo: 1.40, hi: 999 }
 ];
 
-function computeZoneBounds(value, defs = HR_ZONE_DEFS) {
+function computeZoneBounds(value, defs) {
     if (!value) return null;
     const edges = defs.map(def => Math.floor(value * def.lo));
     edges.push(Infinity);
@@ -109,7 +109,11 @@ function refreshZoneSection() {
     if (!currentUser) return;
     const method = currentUser.zone_method || 'lthr';
     const value = method === 'ftp' ? currentUser.ftp : currentUser.lthr;
-    buildZoneSection(method, value);
+    if (value === null || value === undefined) {
+        buildZoneSection(method, null);
+    } else {
+        buildZoneSection(method, value);
+    }
 }
 
 function toggleZoneSection() {
