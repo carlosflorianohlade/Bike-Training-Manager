@@ -58,8 +58,9 @@ const POWER_ZONE_DEFS = [
 
 function computeZoneBounds(value, defs) {
     if (!value) return null;
-    const edges = defs.map(def => Math.floor(value * def.lo));
-    edges.push(Infinity);
+    const edges = [0];
+    defs.forEach(def => edges.push(Math.floor(value * def.hi)));
+    edges[edges.length - 1] = Infinity;
     return edges;
 }
 
