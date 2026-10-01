@@ -78,7 +78,8 @@ function buildZoneSection(method, value) {
         let range;
         if (idx === 0) range = '0-' + hi + ' ' + u;
         else if (hi >= 999 * value) range = '> ' + lo + ' ' + u;
-        else range = lo + '-' + hi + ' ' + u;
+        else if (isFTP) range = lo + '-' + hi + ' ' + u;
+        else range = (lo + 1) + '-' + hi + ' ' + u;
         
         html += '<div class="zone-row" data-zone="' + def.code + '">' +
             '<span class="zone-badge">' + def.code + '</span>' +
