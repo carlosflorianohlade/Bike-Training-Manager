@@ -32,6 +32,10 @@ router.put('/profile', authenticateToken, async (req, res) => {
         if (validatedZoneMethod === 'ftp' && (validatedFtp === null || validatedFtp <= 0)) {
             return res.status(400).json({ success: false, message: 'FTP deve essere un valore positivo quando il metodo di zona è FTP' });
         }
+        // Validate that LTHR is provided when zone_method is lthr
+        if (validatedZoneMethod === 'lthr' && (validatedLthr === null || validatedLthr <= 0)) {
+            return res.status(400).json({ success: false, message: 'LTHR deve essere un valore positivo quando il metodo di zona è LTHR' });
+        }
 
         await db.execute(
             'UPDATE users SET first_name = ?, last_name = ?, weight = ?, height = ?, lthr = ?, ftp = ?, zone_method = ?, preferred_discipline = ? WHERE id = ?',

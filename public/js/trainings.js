@@ -145,15 +145,6 @@ function setZoneTimes(zoneTimes) {
     });
 }
 
-function resetZoneFields() {
-    const rows = document.querySelectorAll('.zone-row');
-    rows.forEach(row => {
-        row.querySelector('.zone-h').value = '';
-        row.querySelector('.zone-m').value = '';
-        row.querySelector('.zone-s').value = '';
-    });
-}
-
 function setFormDisabled(disabled) {
     const controls = document.getElementById('trainingForm').querySelectorAll('input, select, textarea');
     controls.forEach(el => { el.disabled = disabled; });
