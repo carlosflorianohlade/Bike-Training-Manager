@@ -14,6 +14,8 @@ document.addEventListener('DOMContentLoaded', async function() {
     document.getElementById('pWeight').value = currentUser.weight || '';
     document.getElementById('pHeight').value = currentUser.height || '';
     document.getElementById('pLthr').value = currentUser.lthr || '';
+    document.getElementById('pFtp').value = currentUser.ftp || '';
+    document.getElementById('pZoneMethod').value = currentUser.zone_method || 'lthr';
     document.getElementById('pDiscipline').value = currentUser.preferred_discipline || 'MTB';
 
     document.getElementById('profileForm').addEventListener('submit', async function(e) {
@@ -24,6 +26,8 @@ document.addEventListener('DOMContentLoaded', async function() {
             weight: parseFloat(document.getElementById('pWeight').value) || null,
             height: parseFloat(document.getElementById('pHeight').value) || null,
             lthr: parseInt(document.getElementById('pLthr').value) || null,
+            ftp: parseInt(document.getElementById('pFtp').value) || null,
+            zone_method: document.getElementById('pZoneMethod').value,
             preferred_discipline: document.getElementById('pDiscipline').value
         };
 
